@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SaaS 어드민 - v1.8 (정렬 겹침 해결 + 업데이트 펼치기 고급 + 엔진 상세 모달 확장)</title>
+    <!-- Chart.js (그래프 엔진 추가) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+  /* ===============================
+     Design Tokens  (Blue × Teal × Slate)
+  =============================== */
+  :root{
+    /* Brand */
+    --brand-primary:#2563EB; --brand-primary-600:#1D4ED8; --brand-dark:#1E3A8A;
+    --brand-grad-from:#2563EB; --brand-grad-to:#0EA5E9;
+
+    /* Surface / Neutral */
+    --bg:#F9FAFB; --surface:#FFFFFF; --surface-2:#F1F5F9;
+    --border:#E2E8F0; --border-strong:#CBD5E1; --shadow:0 6px 18px rgba(0,0,0,.06);
+
+    /* Text */
+    --text:#1E293B; --text-2:#475569; --muted:#94A3B8;
+
+    /* Semantic */
+    --success:#14B8A6; --success-bg:#ECFDF5;
+    --error:#DC2626; --error-bg:#FEF2F2; --warning:#F59E0B;
+
+    /* Radius */
+    --r-sm:8px; --r-md:12px; --r-lg:16px;
+
+    /* Layout */
+    --sidebar-w:280px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:'Malgun Gothic','맑은 고딕',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:var(--text);background:var(--bg)}
+  .material-symbols-outlined{font-size:20px;vertical-align:middle;margin-right:8px}
+
+  /* ===============================
+     Layout
+  =============================== */
+  .admin-wrapper{display:flex;min-height:100vh}
+
+  /* Sidebar */
+  .sidebar{width:var(--sidebar-w);background:var(--surface);box-shadow:2px 0 14px rgba(0,0,0,.04);padding-bottom:24px;overflow-y:auto;flex-shrink:0}
+  .logo{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .logo img{width:84px;height:32px;object-fit:contain}
+  .logo-text{font-size:19px;font-weight:800;color:#1E3A8A}
+
+  .main-menu-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;color:var(--text-2);border-left:4px solid transparent;border-radius:0 var(--r-sm) var(--r-sm) 0;transition:background .2s,border-color .2s,color .2s}
+  .main-menu-toggle:hover{background:#F1F5F9}
+  .main-menu-toggle.active{background:var(--surface-2);color:var(--brand-dark);border-left-color:var(--brand-primary)}
+  .menu-arrow{font-size:18px}
+  .submenu-list{list-style:none;margin:0;padding:0;overflow:hidden;max-height:0;transition:max-height .28s ease}
+  .submenu-list.open{max-height:520px}
+  .submenu-list li a{display:flex;align-items:center;gap:8px;padding:10px 18px 10px 46px;text-decoration:none;color:var(--muted);border-left:3px solid transparent;border-radius:0 var(--r-sm) var(--r-sm) 0}
+  .submenu-list li a:hover{background:#F5F6FA;color:var(--brand-dark)}
+  .submenu-list li a.active{background:var(--surface-2);color:var(--brand-primary);font-weight:700;border-left-color:var(--brand-primary)}
+
+  .main-content{flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+  /* Header */
+  .header{
+    padding:12px 18px;
+    background:linear-gradient(90deg,#2563EB 0%,#0EA5E9 100%);
+    color:#fff;box-shadow:0 3px 20px rgba(37,99,235,.25);
+    display:flex;justify-content:space-between;align-items:center
+  }
+  .header-left{display:flex;align-items:center;gap:12px}
+  .header-right{display:flex;align-items:center;gap:12px}
+  .search-bar input{width:300px;font-size:14px;padding:10px 14px 10px 42px;border-radius:999px;border:1px solid transparent;background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="%2394A3B8"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.49 21.49 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>') no-repeat 14px center}
+  .status-badge{margin-left:6px;background:rgba(0,0,0,.25);color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  .help-link{color:#fff;text-decoration:none;opacity:.9}
+  .help-link:hover{opacity:1}
+
+  .content-area{padding:26px}
+  .page-header{display:flex;justify-content:flex-end;margin-bottom:18px}
+  .current-menu-path{font-size:13px;color:var(--muted)}
+
+  /* Card / Alerts / Tabs */
+  .card{background:var(--surface);border-radius:14px;padding:24px;margin-bottom:24px;box-shadow:var(--shadow);border:1px solid #B8B8B8}
+  .card-header{font-size:20px;font-weight:800;color:var(--brand-dark);margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(37,99,235,.45)}
+  .alert-info{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:10px;background:rgba(219,234,254,.7);color:var(--brand-dark);border-left:5px solid var(--brand-primary);font-size:14px;margin:16px 0}
+
+  .tabs{display:flex;gap:6px;border:none;margin-bottom:16px}
+  .tab-btn{border:none;background:#EFF6FF;color:var(--brand-dark);padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;transition:.2s}
+  .tab-btn:hover{background:var(--brand-primary);color:#fff}
+  .tab-btn.active{background:linear-gradient(90deg,var(--brand-grad-from),var(--brand-grad-to));color:#fff;font-weight:700;transform:translateY(-1px);box-shadow:0 3px 10px rgba(37,99,235,.25)}
+  .submenu-content{display:none!important}
+  .submenu-content.active{display:block!important}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  /* Inputs / Selects */
+  input,select,button{font:inherit}
+  .select{position:relative;display:inline-flex;align-items:center}
+  select, input[type="text"]{
+    background:#fff;border:1px solid var(--border-strong);color:var(--text);
+    border-radius:10px;padding:10px 12px;outline:none;transition:border-color .15s, box-shadow .15s;
+  }
+  select:focus,input[type="text"]:focus{border-color:var(--brand-primary);box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+  select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding-right:36px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="%2394A3B8"><path d="M7 10l5 5 5-5z"/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:18px 18px}
+
+  /* Multi-select */
+  .multi{position:relative}
+  .multi-toggle{min-width:180px;display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;cursor:pointer}
+  .multi-panel{position:absolute;z-index:10;top:calc(100% + 6px);left:0;min-width:260px;background:#fff;border:1px solid var(--border-strong);border-radius:12px;box-shadow:var(--shadow);padding:8px;display:none;max-height:280px;overflow:auto}
+  .multi.open .multi-panel{display:block}
+  .multi-search{width:100%;margin:6px 0 8px}
+  .multi-option{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer}
+  .multi-option:hover{background:#F5F6FA}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{background:#F1F5F9;border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
+
+  .btn-reset{border:1px solid var(--border-strong);background:#fff;color:var(--text-2);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600}
+  .btn-reset:hover{background:#F5F6FA}
+
+  .filter-bar{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DCDCDC;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+  .filter-bar label{font-size:14px;color:var(--text-2);font-weight:700}
+
+  /* Table */
+  .styled-table{width:100%;border-collapse:separate;border-spacing:0 8px;margin-top:10px}
+  .styled-table thead tr th{
+    background:#EAF2FF;
+    color:#334155;font-weight:800;font-size:13.5px;
+    padding:14px 40px 14px 16px;
+    border-bottom:1px solid var(--border); position:relative; user-select:none;
+    text-align:center; vertical-align:middle; line-height:1.25;
+  }
+  .th-label{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;max-width:100%}
+  .styled-table tbody tr{box-shadow:var(--shadow);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.96)}
+  .styled-table tbody tr td{padding:15px 16px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--text);font-size:15px;line-height:1.55;text-align:center;}
+  .styled-table tbody tr td:first-child{border-left:1px solid var(--border);border-top-left-radius:12px;border-bottom-left-radius:12px}
+  .styled-table tbody tr td:last-child{border-right:1px solid var(--border);border-top-right-radius:12px;border-bottom-right-radius:12px}
+  .styled-table tbody tr:hover td{background:rgba(37,99,235,.08);transition:background .2s ease}
+  .history-table th, .history-table td{text-align:center}
+  .history-table tbody td{font-size:.9em}
+
+  .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
+  .tag-active{background:var(--success-bg);color:var(--success)}
+  .tag-inactive{background:var(--error-bg);color:var(--error)}
+  .flag-icon{width:18px;height:12px;margin-right:8px;border:1px solid #ddd;border-radius:2px;object-fit:cover;vertical-align:middle;background:#eee}
+
+  /* 정렬 토글 */
+  .sorter{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px;
+  }
+  .sort-toggle{
+    width:24px; height:24px; border:1px solid transparent; border-radius:6px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; background:transparent; padding:0;
+  }
+  .sort-toggle:hover{ background:#F3F5FF; border-color:#E3E6FF; }
+  .sort-icon{ line-height:1; font-size:11px; height:10px; display:block; user-select:none; }
+  .sort-up{ color:#9AA3AF; margin-top:1px; }
+  .sort-down{ color:#9AA3AF; margin-bottom:1px; }
+  [aria-sort="ascending"] .sort-up{ color:#2563EB; font-weight:800; }
+  [aria-sort="ascending"] .sort-down{ color:#D0D3E2; }
+  [aria-sort="descending"] .sort-down{ color:#2563EB; font-weight:800; }
+  [aria-sort="descending"] .sort-up{ color:#D0D3E2; }
+  .sort-toggle:focus-visible{
+    outline:3px solid rgba(37,99,235,.35); outline-offset:1px; border-color:#93C5FD;
+  }
+
+  /* Info icon */
+  .info-icon{
+    font-family:'Material Symbols Outlined';
+    font-size:18px; color:#2563EB; margin-left:6px; cursor:pointer; position:relative; vertical-align:middle;
+  }
+  .info-icon:hover::after{
+    content:attr(data-info);
+    position:absolute; top:22px; left:50%; transform:translateX(-50%);
+    background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 10px;
+    font-size:13px; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,.1); z-index:20;
+    font-family:'Malgun Gothic','맑은 고딕',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    line-height:1.35;
+  }
+
+  /* Modal */
+  .modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:200; }
+  .modal-content{ background:#fff; padding:24px 28px; border-radius:12px; min-width:360px; max-width:720px; box-shadow:0 10px 30px rgba(0,0,0,.18); }
+  .modal h3{ margin:0 0 10px 0; color:var(--brand-primary); font-size:18px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .modal h4{ margin:14px 0 6px; font-size:15px; color:#333 }
+  .kv{display:grid; grid-template-columns:120px 1fr; gap:8px 14px; font-size:14px}
+  .kv div:nth-child(odd){color:#666}
+  .bul{margin:6px 0 10px 18px; padding-left:0}
+  .bul li{margin:2px 0; font-size:14px}
+  .metric{display:flex; gap:8px; flex-wrap:wrap}
+  .metric .chip{border:1px dashed #BFDBFE; background:#EFF6FF; color:#1D4ED8}
+  .btn-close{ background:var(--brand-primary); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; margin-top:12px; font-weight:700; }
+  </style>
+</head>
+<body>
+  <div class="admin-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsq4mjs8rl_RbgtDrGGgUgMPB__9mCVN730Q&s" alt="로고1"/>
+        <div class="logo-text">SaaS Admin</div>
+      </div>
+
+      <a class="main-menu-toggle" data-menu="menu-saas">
+        <div><span class="material-symbols-outlined">shopping_cart</span> SaaS 상품 관리</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list" id="menu-saas">
+        <li><a href="#" class="submenu-link" data-target="content-saas-product">상품 / 기능 정의</a></li>
+      </ul>
+
+      <a class="main-menu-toggle" data-menu="menu-client">
+        <div><span class="material-symbols-outlined">business</span> 고객사 관리</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list" id="menu-client">
+        <li><a href="#" class="submenu-link" data-target="content-client-iam">관리자 ID 관리</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-client-tos">고객사 약관 설정</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-client-privacy">고객사 개인정보처리방침 설정</a></li>
+      </ul>
+
+      <a class="main-menu-toggle active" data-menu="menu-operation">
+        <div><span class="material-symbols-outlined">settings_suggest</span> 서비스 운영</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list open" id="menu-operation">
+        <li style="margin-top:10px;"><a href="#" class="submenu-link" data-target="content-ai-model">AI 모델 정보 관리</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-troubleshooting">장애처리</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-tech-support">기술지원</a></li>
+        <li><a href="#" class="submenu-link active" data-target="content-operation-report">운영/분석 리포트</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-data-collection">데이터 수집 관리</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-ab-test">AB테스트 관리</a></li>
+      </ul>
+
+      <a class="main-menu-toggle" data-menu="menu-billing">
+        <div><span class="material-symbols-outlined">receipt</span> 청구/수납</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list" id="menu-billing">
+        <li><a href="#" class="submenu-link" data-target="content-billing-report">과금리포트</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-billing-invoice">인보이스</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-billing-payment">수납</a></li>
+      </ul>
+
+      <a class="main-menu-toggle" data-menu="menu-security">
+        <div><span class="material-symbols-outlined">security</span> 보안 및 컴플라이언스</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list" id="menu-security">
+        <li><a href="#" class="submenu-link" data-target="content-security">보안</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-compliance">컴플라이언스</a></li>
+      </ul>
+
+      <a class="main-menu-toggle" data-menu="menu-settings">
+        <div><span class="material-symbols-outlined">tune</span> 일반 설정</div>
+        <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+      </a>
+      <ul class="submenu-list" id="menu-settings">
+        <li><a href="#" class="submenu-link" data-target="content-settings-language">언어 설정</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-settings-display">화면 설정</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-settings-call">통화 설정</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-settings-tutorial">시작하기 튜토리얼</a></li>
+      </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="header">
+        <div class="header-left">
+          <div class="search-bar"><input type="text" placeholder="통합 검색창"/></div>
+        </div>
+        <div class="header-right">
+          <span class="user-info">로그인 상태: <b>Maxis Operator</b></span>
+          <span class="status-badge">서비스 상태: 정상</span>
+          <a href="#" class="help-link"><span class="material-symbols-outlined" style="font-size:16px;margin-right:0;">help</span> Help</a>
+        </div>
+      </div>
+
+      <div class="content-area">
+        <div class="page-header">
+          <div class="current-menu-path">홈 <span style="margin: 0 5px;">&gt;</span> 서비스 운영 <span style="margin: 0 5px;">&gt;</span> <span id="current-submenu-title" style="font-weight:700;">운영/분석 리포트</span></div>
+        </div>
+
+        <!-- ========================= AI 모델 정보 관리 (원본 유지) ========================= -->
+        <div class="submenu-content" id="content-ai-model">
+          <div class="card">
+            <div class="card-header">
+              AI 모델 정보 관리
+              <span style="font-size:13px;font-weight:500;color:#6c757d;">(U+ 관리자 : 전체 고객사 조회, 고객사 관리자: 조회 전용)</span>
+            </div>
+
+            <div class="tabs">
+              <button class="tab-btn active" data-target="tab-ondev-model">
+                <span class="material-symbols-outlined" style="font-size:18px;">phone_android</span> On-device AI모델
+              </button>
+              <button class="tab-btn" data-target="tab-cloud-model">
+                <span class="material-symbols-outlined" style="font-size:18px;">cloud_circle</span> Cloud AI모델
+              </button>
+            </div>
+
+            <!-- On-device 탭 -->
+            <div id="tab-ondev-model" class="tab-content active">
+              <h4 style="margin-top:4;color:var(--brand-dark);border-bottom:1px dashed #e5e5f5;padding-bottom:5px;">
+                <span class="material-symbols-outlined" style="font-size:18px;">list_alt</span> 고객사별 온디바이스 모델 현황 (최신 버전 조회 전용)
+              </h4>
+              <p class="alert-info"><span class="material-symbols-outlined" style="margin-right:5px;">check_circle</span> 본 현황은 ixi-O 어드민 배포 정보를 연동하여 최신 모델 버전/지원 언어를 조회합니다.</p>
+
+              <!-- 현황 테이블 -->
+              <table class="styled-table" id="status-table">
+                <thead>
+                  <tr>
+                    <th data-key="customer"><span class="th-label">고객사/통신사</span><span class="sorter"></span></th>
+                    <th data-key="engine"><span class="th-label">AI 엔진 유형</span><span class="sorter"></span></th>
+                    <th data-key="version"><span class="th-label">버전 번호</span><span class="sorter"></span></th>
+                    <th data-key="os"><span class="th-label">OS 타입</span><span class="sorter"></span></th>
+                    <th data-key="title"><span class="th-label">제목</span><span class="sorter"></span></th>
+                    <th data-key="update"><span class="th-label">업데이트 내용</span><span class="sorter"></span></th>
+                    <th data-key="addr"><span class="th-label">AI 엔진 주소</span><span class="sorter"></span></th>
+                    <th data-key="date"><span class="th-label">적용 일자</span><span class="sorter"></span></th>
+                    <th data-key="latest"><span class="th-label">최신 버전</span><span class="sorter"></span></th>
+                  </tr>
+                </thead>
+                <tbody id="status-body">
+                  <tr class="current-version">
+                    <td><img class="flag-icon" src="https://i.namu.wiki/i/aeSe4AZuxZsAfcgnDlTVHGEVsuItrRvjUwfY1AFTpkXeeywz5JfVldUDHpC0Eiz0KroS_sUTwTEUNie1pSn665853F2wTBZeIyyHuYfh5QZWFlTA54-UilDoRWE4uJ8Tt2YAB4965p7jfAdrpbv9Wg.svg" alt="KR"/>LG U+</td>
+                    <td>ITN</td>
+                    <td>1.0.3</td>
+                    <td title="iOS">iOS</td>
+                    <td title="경량 모델 배포">경량 모델 배포</td>
+                    <td class="col-update" title="한국어 정확도 향상">한국어 정확도 향상</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-09-15</td>
+                    <td><span class="tag tag-active">CURRENT</span></td>
+                  </tr>
+                  <tr>
+                    <td><img class="flag-icon" src="https://i.namu.wiki/i/MnbeLtExAcOYQWwr6vTUkMycXez3BCr9b-ZNCSmx5LW9HuTAeLodhzJt53S6IyDlXo3ncyGunnR8HgeoReMmUqgvHtYKk0sIleF-FRAMnOH0MODhKwUjStbbOGEHdwjJRYFCnP9q2YhlY0HSrICqjQ.svg" alt="MY"/>Maxis</td>
+                    <td>STT/NR</td>
+                    <td>1.0.2</td>
+                    <td title="iOS">iOS</td>
+                    <td title="3월 CVT 입고 모델">3월 CVT 입고 모델</td>
+                    <td class="col-update" title="STT 추가 데이터 학습 버전">STT 추가 데이터 학습 버전</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-09-01</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><img class="flag-icon" src="https://i.namu.wiki/i/0qNHR6QhC1NiOo9X68WyHowrGtxRh2AaNGjbZMffbBw6E5chzDLNtFZR_tqPWGR2ntEXqtE0hkTkrbHCLbn9qw4QpqUYvyI8YLG-RS435d5jsFnQuJxulcElN5WIPgytVmhDutLdsUff8bVKUl7WZg.svg" alt="SG"/>StarHub</td>
+                    <td>VP</td>
+                    <td>1.0.35</td>
+                    <td title="Android">Android</td>
+                    <td title="잡음 제거 및 음성 감지 정확도 개선">잡음 제거 및 음성 감지 정확도 개선</td>
+                    <td class="col-update" title="싱가포르 만다린/타밀 베타 포함">싱가포르 만다린/타밀 베타 포함</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-08-16</td>
+                    <td><span class="tag tag-inactive">미적용</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <hr style="border:0;border-top:1px solid #edeffd;margin:30px 0"/>
+
+              <h4 style="color:var(--brand-dark);border-bottom:1px dashed #e5e5f5;padding-bottom:5px;">
+                <span class="material-symbols-outlined" style="font-size:18px;">history</span> 전체 버전 배포 이력 (조회 전용)
+              </h4>
+
+              <!-- 필터 바 -->
+              <div class="filter-bar" id="history-filter-bar">
+                <label for="history-customer">고객사/통신사</label>
+                <div class="select">
+                  <select id="history-customer" aria-label="고객사/통신사">
+                    <option value="__all__">전체</option>
+                  </select>
+                </div>
+
+                <div class="multi" id="engine-multi">
+                  <div class="multi-toggle" role="button" aria-expanded="false">AI 엔진 유형<span class="material-symbols-outlined">expand_more</span></div>
+                  <div class="multi-panel" role="listbox" aria-multiselectable="true">
+                    <input class="multi-search" type="text" placeholder="검색"/>
+                  </div>
+                </div>
+
+                <div class="multi" id="os-multi">
+                  <div class="multi-toggle" role="button" aria-expanded="false">OS 타입<span class="material-symbols-outlined">expand_more</span></div>
+                  <div class="multi-panel" role="listbox" aria-multiselectable="true">
+                    <input class="multi-search" type="text" placeholder="검색"/>
+                  </div>
+                </div>
+
+                <button type="button" class="btn-reset" id="filter-reset">초기화</button>
+                <div class="chips" id="state-chips" style="margin-left:auto"></div>
+              </div>
+
+              <table class="styled-table history-table" id="history-table" aria-live="polite">
+                <thead>
+                  <tr>
+                    <th data-key="customer"><span class="th-label">고객사/통신사</span><span class="sorter"></span></th>
+                    <th data-key="engine"><span class="th-label">AI 엔진 유형</span><span class="sorter"></span></th>
+                    <th data-key="version"><span class="th-label">버전 번호</span><span class="sorter"></span></th>
+                    <th data-key="os"><span class="th-label">OS 타입</span><span class="sorter"></span></th>
+                    <th data-key="title"><span class="th-label">제목</span><span class="sorter"></span></th>
+                    <th data-key="update"><span class="th-label">업데이트 내용</span><span class="sorter"></span></th>
+                    <th data-key="addr"><span class="th-label">AI 엔진 주소</span><span class="sorter"></span></th>
+                    <th data-key="date" aria-sort="descending"><span class="th-label">적용 일자</span><span class="sorter"></span></th>
+                    <th data-key="latest"><span class="th-label">최신 버전</span><span class="sorter"></span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="current-version">
+                    <td>Maxis</td>
+                    <td>STT/NR</td>
+                    <td>1.0.2</td>
+                    <td title="iOS">iOS</td>
+                    <td title="3월 CVT 입고 모델">3월 CVT 입고 모델</td>
+                    <td class="col-update" title="STT 추가 데이터 학습 버전">STT 추가 데이터 학습 버전</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-09-01</td>
+                    <td><span class="tag tag-active">CURRENT</span></td>
+                  </tr>
+                  <tr>
+                    <td>LG U+</td>
+                    <td>ITN</td>
+                    <td>1.0.3</td>
+                    <td title="iOS">iOS</td>
+                    <td title="경량 모델 배포">경량 모델 배포</td>
+                    <td class="col-update" title="한국어 정확도 향상">한국어 정확도 향상</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-09-15</td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <td>StarHub</td>
+                    <td>VP</td>
+                    <td>1.0.35</td>
+                    <td title="Android">Android</td>
+                    <td title="잡음 제거 및 음성 감지 정확도 개선">잡음 제거 및 음성 감지 정확도 개선</td>
+                    <td class="col-update" title="싱가포르 만다린/타밀 베타 포함">싱가포르 만다린/타밀 베타 포함</td>
+                    <td title="https://aimodel.aicall-lgu.com/zi..">https://aimodel.aicall-lgu.com/zi..</td>
+                    <td>2025-08-16</td>
+                    <td>—</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style="margin-top:10px; font-size:14px; color:#5b5b6a; text-align:left;">
+                * On-device AI 엔진의 자세한 설명은 ⓘ 버튼을 클릭하세요
+              </div>
+            </div>
+
+            <!-- Cloud AI모델 탭 -->
+            <div id="tab-cloud-model" class="tab-content">
+              <div class="card" style="padding:0;border:none;box-shadow:none;">
+                <div class="card-header" style="border:none;padding:0 0 10px 0;">Cloud AI모델</div>
+                <p class="alert-info">상세 GUI 구성 예정입니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ========================= /AI 모델 정보 관리 ========================= -->
+
+        <!-- ========================= 운영/분석 리포트 (SLA) ========================= -->
+<div class="submenu-content" id="content-operation-report">
+  <div class="card">
+    <div class="card-header">
+      운영/분석 리포트
+      <span style="font-size:13px;font-weight:500;color:#6c757d;">(SLA 요약 · 월간 리포트 · 장애 리포트)</span>
+    </div>
+
+    <!-- 상단 탭 -->
+    <div class="tabs" id="reportTabs">
+      <button class="tab-btn active" data-target="tab-sla-summary">
+        <span class="material-symbols-outlined" style="font-size:18px;">rule</span> SLA 요약
+      </button>
+      <button class="tab-btn" data-target="tab-monthly-report">
+        <span class="material-symbols-outlined" style="font-size:18px;">calendar_month</span> 월간 리포트
+      </button>
+      <button class="tab-btn" data-target="tab-incident-report">
+        <span class="material-symbols-outlined" style="font-size:18px;">warning</span> 장애 리포트
+      </button>
+    </div>
+
+    <!-- ========== (1) SLA 요약 ========== -->
+    <div id="tab-sla-summary" class="tab-content active">
+      <div class="card" style="margin:0 0 14px 0">
+        <div style="font-weight:800;color:var(--brand-dark);margin-bottom:6px">ixi-o Service Level Agreement (SLA)</div>
+        <p class="alert-info" style="margin:8px 0 0 0">
+          <span class="material-symbols-outlined" style="margin-right:6px">info</span>
+          ixi-o는 모든 이슈 레벨에 대해 명확한 대응 목표와 보장된 품질을 제공합니다.
+        </p>
+      </div>
+
+      <h4 style="margin:12px 0 6px;color:var(--brand-dark);">1) 심각도 등급별 대응 목표</h4>
+      <table class="styled-table" id="sla-severity-table">
+        <thead>
+          <tr>
+                    <th><span class="th-label">Category</span><span class="sorter"></span></th>
+                    <th><span class="th-label">Definition / Examples</span><span class="sorter"></span></th>
+                    <th><span class="th-label">Initial Response</span><span class="sorter"></span></th>
+                    <th><span class="th-label">Root Cause Analysis (RCA)</span><span class="sorter"></span></th>
+                    <th><span class="th-label">Issue Resolution</span><span class="sorter"></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-sev="L3">
+            <td><span class="tag tag-inactive">Critical (L3)</span></td>
+            <td>90%+ 사용자 영향의 대규모 장애, 보안 침해/데이터 손실 위험</td>
+            <td>Within 4 hours</td>
+            <td>Within 1 day</td>
+            <td>Within 5 days</td>
+          </tr>
+          <tr data-sev="L2">
+            <td><span class="tag" style="background:var(--warning);color:#fff;font-weight:800;">Major (L2)</span></td>
+            <td>핵심 기능 저하 또는 부분적 중단(특정 리전/계정), 품질 기준 미달</td>
+            <td>Within 3 days</td>
+            <td>Within 5 days</td>
+            <td>Within 10 days</td>
+          </tr>
+          <tr data-sev="L1">
+            <td><span class="tag tag-active">Minor (L1)</span></td>
+            <td>경미한 이슈/문의/설정 오류/비기능 결함</td>
+            <td>Within 5 days</td>
+            <td>Within 10 days</td>
+            <td>Next Release</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">
+        * 모든 대응 시간은 OO시간 기준입니다. 상세 조항 및 에스컬레이션 절차는 최종 계약서에 포함됩니다.
+      </div>
+
+      <h4 style="margin:18px 0 6px;color:var(--brand-dark);">2) 서비스 품질 지표 및 목표</h4>
+      <table class="styled-table" id="sla-metrics-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Quality Metric</th>
+            <th>Description</th>
+            <th>Target Level</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>On-device AI → STT</td>
+            <td>CRR (Correct Recognition Rate)</td>
+            <td>전체 단어 중 올바르게 인식된 비율</td>
+            <td>≥ 85%</td>
+            <td>Malay, English</td>
+          </tr>
+          <tr>
+            <td>On-device AI → STT</td>
+            <td>WRR (Word Recognition Rate)</td>
+            <td>입력 음성의 단어 인식 비율</td>
+            <td>≥ 75%</td>
+            <td>Malay, English</td>
+          </tr>
+          <tr>
+            <td>On-device AI → Scam Detection</td>
+            <td>True Positive Rate (TPR)</td>
+            <td>실제 보이스피싱 탐지율</td>
+            <td>≥ 90%</td>
+            <td>–</td>
+          </tr>
+          <tr>
+            <td>On-device AI → Scam Detection</td>
+            <td>False Positive Rate (FPR)</td>
+            <td>정상 통화의 오탐 비율</td>
+            <td>≤ 8%</td>
+            <td>–</td>
+          </tr>
+          <tr>
+            <td>AI APIM</td>
+            <td>Server Availability</td>
+            <td>시스템 가용 시간 비율</td>
+            <td>≥ 99%</td>
+            <td>–</td>
+          </tr>
+          <tr>
+            <td>AI APIM</td>
+            <td>API Response Time</td>
+            <td>요청~응답 평균 시간</td>
+            <td>≤ 200 ms</td>
+            <td>–</td>
+          </tr>
+          <tr>
+            <td>AI APIM</td>
+            <td>API Success Rate</td>
+            <td>정상 처리된 요청 비율</td>
+            <td>≥ 99%</td>
+            <td>–</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin:18px 0 6px;color:var(--brand-dark);">3) 추가 안내</h4>
+      <ul style="margin:6px 0 0 18px;padding-left:0">
+        <li>모든 SLA 지표는 ixi-o 내부 모니터링 대시보드로 지속 감시됩니다.</li>
+        <li>L3 이상 크리티컬 인시던트는 실시간 알림과 함께 즉시 에스컬레이션됩니다.</li>
+        <li>분기별 파트너 리뷰에서 성과 추세를 평가하고 목표를 조정할 수 있습니다.</li>
+      </ul>
+    </div>
+
+    <!-- ========== (2) 월간 리포트 ========== -->
+    <div id="tab-monthly-report" class="tab-content">
+      <!-- 필터 바 -->
+      <div class="filter-bar" id="monthly-filter">
+        <label for="m-month">월</label>
+        <div class="select">
+          <select id="m-month">
+            <option>2025-10</option>
+            <option selected>2025-09</option>
+            <option>2025-08</option>
+          </select>
+        </div>
+
+        <label for="m-customer">고객사</label>
+        <div class="select">
+          <select id="m-customer">
+            <option value="__all__" selected>전체</option>
+            <option>LG U+</option>
+            <option>Maxis</option>
+            <option>StarHub</option>
+          </select>
+        </div>
+
+        <label for="m-region">리전</label>
+        <div class="select">
+          <select id="m-region">
+            <option value="__all__" selected>전체</option>
+            <option>KR</option>
+            <option>MY</option>
+            <option>SG</option>
+          </select>
+        </div>
+
+        <div class="chips" id="m-chips" style="margin-left:auto"></div>
+      </div>
+
+      <!-- KPI 카드 (미니 차트 포함) -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px">
+  <!-- SLA 준수율 (도넛) -->
+  <div class="card" style="margin:0;padding:16px">
+    <div style="font-size:12px;color:var(--text-2);font-weight:700;">SLA 준수율</div>
+    <div style="height:72px;margin-top:4px"><canvas id="chart-sla"></canvas></div>
+    <div style="font-size:20px;font-weight:900;margin-top:6px;text-align:center">
+      <span id="kpi-sla">86%</span>
+    </div>
+    <div class="chip" style="margin-top:8px">MoM <b>+2%p</b></div>
+  </div>
+
+  <!-- 가용성 (막대 + 목표선) -->
+  <div class="card" style="margin:0;padding:16px">
+    <div style="font-size:12px;color:var(--text-2);font-weight:700;">가용성(%)</div>
+    <div style="height:72px;margin-top:4px"><canvas id="chart-avail"></canvas></div>
+    <div style="font-size:20px;font-weight:900;margin-top:6px;text-align:center">
+      <span id="kpi-avail">99.92%</span>
+    </div>
+    <div class="chip" style="margin-top:8px">목표 ≥99%</div>
+  </div>
+
+  <!-- API 응답시간 (꺾은선: 일자별 p95) -->
+  <div class="card" style="margin:0;padding:16px">
+    <div style="font-size:12px;color:var(--text-2);font-weight:700;">API 응답시간(ms)</div>
+    <div style="height:72px;margin-top:4px"><canvas id="chart-rt"></canvas></div>
+    <div style="font-size:20px;font-weight:900;margin-top:6px;text-align:center">
+      <span id="kpi-rt">182</span> <span style="font-size:12px;color:var(--muted)">avg (p95 240)</span>
+    </div>
+    <div class="chip" style="margin-top:8px">목표 ≤200</div>
+  </div>
+
+  <!-- API 성공률 (도넛) -->
+  <div class="card" style="margin:0;padding:16px">
+    <div style="font-size:12px;color:var(--text-2);font-weight:700;">API 성공률(%)</div>
+    <div style="height:72px;margin-top:4px"><canvas id="chart-success"></canvas></div>
+    <div style="font-size:20px;font-weight:900;margin-top:6px;text-align:center">
+      <span id="kpi-sr">99.3%</span>
+    </div>
+    <div class="chip" style="margin-top:8px">목표 ≥99%</div>
+  </div>
+</div>
+
+      <!-- KPI 테이블 -->
+      <h4 style="margin:18px 0 6px;color:var(--brand-dark);">월간 KPI 요약</h4>
+      <table class="styled-table" id="monthly-kpi-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Target</th>
+            <th>Actual</th>
+            <th>Status</th>
+            <th>MoM Δ</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Server Availability</td>
+            <td>≥99%</td>
+            <td>99.92%</td>
+            <td><span class="tag tag-active">OK</span></td>
+            <td>+0.12%p</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>API Response Time (avg)</td>
+            <td>≤200ms</td>
+            <td>182ms</td>
+            <td><span class="tag tag-active">OK</span></td>
+            <td>-9ms</td>
+            <td>p95=240ms</td>
+          </tr>
+          <tr>
+            <td>API Success Rate</td>
+            <td>≥99%</td>
+            <td>99.3%</td>
+            <td><span class="tag tag-active">OK</span></td>
+            <td>+0.1%p</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>STT CRR</td>
+            <td>≥85%</td>
+            <td>86.1%</td>
+            <td><span class="tag tag-active">OK</span></td>
+            <td>+0.4%p</td>
+            <td>MY 88.0 / EN 84.2</td>
+          </tr>
+          <tr>
+            <td>STT WRR</td>
+            <td>≥75%</td>
+            <td>74.6%</td>
+            <td><span class="tag tag-inactive">Fail</span></td>
+            <td>-0.6%p</td>
+            <td>영어 WRR 저하</td>
+          </tr>
+          <tr>
+            <td>Scam Detection TPR</td>
+            <td>≥90%</td>
+            <td>91.3%</td>
+            <td><span class="tag tag-active">OK</span></td>
+            <td>+0.7%p</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Scam Detection FPR</td>
+            <td>≤8%</td>
+            <td>8.7%</td>
+            <td><span class="tag tag-inactive">Fail</span></td>
+            <td>+0.9%p</td>
+            <td>특정 리전 false alarm</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 위반/경계 리스트 -->
+      <h4 style="margin:18px 0 6px;color:var(--brand-dark);">SLA 위반/경계 항목</h4>
+      <table class="styled-table" id="monthly-violation-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Metric</th>
+            <th>Target</th>
+            <th>Actual</th>
+            <th>Gap</th>
+            <th>Customer/Region</th>
+            <th>Owner</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-09-11</td>
+            <td>STT WRR</td>
+            <td>≥75%</td>
+            <td>72.9%</td>
+            <td>-2.1%p</td>
+            <td>EN / MY</td>
+            <td>ASR팀</td>
+            <td><span class="tag tag-inactive">Open</span></td>
+          </tr>
+          <tr>
+            <td>2025-09-19</td>
+            <td>Scam FPR</td>
+            <td>≤8%</td>
+            <td>9.5%</td>
+            <td>+1.5%p</td>
+            <td>SG</td>
+            <td>Fraud팀</td>
+            <td><span class="tag tag-inactive">Open</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 릴리스 타임라인 자리 -->
+      <div class="card" style="margin-top:18px">
+        <div style="font-weight:800;color:var(--brand-dark);margin-bottom:8px">릴리스/설정변경 타임라인 & KPI 추세</div>
+        <canvas id="kpiTrend" height="70"></canvas>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">* Chart.js 미탑재 시 그래프는 표시되지 않습니다.</div>
+      </div>
+
+      <!-- 월간 요약 & 액션 -->
+      <div class="card" style="margin-top:12px">
+        <div style="font-weight:800;color:var(--brand-dark);margin-bottom:6px">월간 요약 & 후속 액션</div>
+        <ul style="margin:6px 0 0 18px;padding-left:0">
+          <li>가용성/응답시간/성공률은 목표 충족. STT WRR/Scam FPR은 개선 필요.</li>
+          <li>액션: (1) 영어 WRR 코퍼스 확장, (2) FPR 임계값 조정 및 오탐 샘플 점검, (3) 릴리스 전 A/B 사전 검증 강화.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ========== (3) 장애 리포트 ========== -->
+    <div id="tab-incident-report" class="tab-content">
+      <!-- 상단 카드 -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+        <div class="card" style="margin:0;padding:16px">
+          <div style="font-size:12px;color:var(--text-2);font-weight:700;">Incidents</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">7</div>
+          <div class="chip" style="margin-top:8px">L3 1 / L2 2 / L1 4</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px">
+          <div style="font-size:12px;color:var(--text-2);font-weight:700;">MTTD</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">6m</div>
+          <div class="chip" style="margin-top:8px">탐지</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px">
+          <div style="font-size:12px;color:var(--text-2);font-weight:700;">MTTA</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">11m</div>
+          <div class="chip" style="margin-top:8px">인지</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px">
+          <div style="font-size:12px;color:var(--text-2);font-weight:700;">MTTR</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">48m</div>
+          <div class="chip" style="margin-top:8px">복구</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px">
+          <div style="font-size:12px;color:var(--text-2);font-weight:700;">다운타임(분)</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">32</div>
+          <div class="chip" style="margin-top:8px">Error Budget 74%</div>
+        </div>
+      </div>
+
+      <!-- 사건 목록 -->
+      <h4 style="margin:18px 0 6px;color:var(--brand-dark);">사건 목록</h4>
+      <table class="styled-table" id="incident-table">
+        <thead>
+          <tr>
+            <th>Incident ID</th>
+            <th>일시(UTC)</th>
+            <th>Sev</th>
+            <th>Region/Customer</th>
+            <th>Impact</th>
+            <th>Affected</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="#ir-20250915-01" class="incident-link">IR-20250915-01</a></td>
+            <td>2025-09-15 02:11</td>
+            <td><span class="tag tag-active">L3</span></td>
+            <td>KR / LG U+</td>
+            <td>가용성 96% (15m)</td>
+            <td>APIM(gateway)</td>
+            <td>00:18</td>
+            <td><span class="tag tag-active">Closed</span></td>
+            <td>OPS</td>
+          </tr>
+          <tr>
+            <td><a href="#ir-20250919-02" class="incident-link">IR-20250919-02</a></td>
+            <td>2025-09-19 09:35</td>
+            <td><span class="tag tag-inactive">L2</span></td>
+            <td>SG / StarHub</td>
+            <td>FPR 11% 피크</td>
+            <td>Scam(v1.4)</td>
+            <td>01:12</td>
+            <td><span class="tag tag-inactive">Open</span></td>
+            <td>Fraud</td>
+          </tr>
+          <tr>
+            <td><a href="#ir-20250911-03" class="incident-link">IR-20250911-03</a></td>
+            <td>2025-09-11 14:20</td>
+            <td><span class="tag tag-inactive">L2</span></td>
+            <td>MY / Maxis</td>
+            <td>WRR 72~74%</td>
+            <td>ASR(en)</td>
+            <td>00:36</td>
+            <td><span class="tag tag-active">Monitoring</span></td>
+            <td>ASR</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 사건 상세 -->
+      <div class="card" id="ir-20250919-02" style="margin-top:18px">
+        <div style="font-weight:800;color:var(--brand-dark);margin-bottom:6px">IR-20250919-02 상세</div>
+        <div style="display:grid;grid-template-columns:160px 1fr;gap:8px 16px;font-size:14px">
+          <div>Timeline</div>
+          <div>T0 Detect(알람) → T+9m Ack → T+25m Mitigate → T+72m Resolve</div>
+          <div>Root Cause</div>
+          <div>임계값 튜닝 미흡 + 신규 룰 배포 시 사전검증 부족</div>
+          <div>영향</div>
+          <div>FPR 피크 11% (SG), 사용자 오탐 알림 증가</div>
+          <div>조치</div>
+          <div>임계 재조정, 오탐 샘플 재학습, 배포 전 A/B 게이팅</div>
+        </div>
+      </div>
+
+      <!-- 월간 분석 요약 -->
+      <div class="card" style="margin-top:12px">
+        <div style="font-weight:800;color:var(--brand-dark);margin-bottom:6px">월간 분석</div>
+        <ul style="margin:6px 0 0 18px;padding-left:0">
+          <li>원인 분류 Top: Config &gt; Capacity &gt; Code</li>
+          <li>영향 상위: APIM Gateway–KR, Scam Rule–SG</li>
+          <li>집중 시간대: 평일 09–11시</li>
+          <li>SLA 영향: 다운타임 32분 / Error Budget 74% 사용</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ========================= /운영/분석 리포트 ========================= -->
+
+<script>
+(function(){
+  // 탭 전환
+  document.querySelectorAll('#content-operation-report .tab-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const card = this.closest('.card');
+      card.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      card.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(this.dataset.target).classList.add('active');
+    });
+  });
+
+  // 월간 필터 칩
+  function renderMonthlyChips(){
+    const month = document.getElementById('m-month')?.value;
+    const cust  = document.getElementById('m-customer')?.value;
+    const region= document.getElementById('m-region')?.value;
+    const chips = [];
+    if(month) chips.push(`월=${month}`);
+    if(cust && cust!=='__all__') chips.push(`고객사=${cust}`);
+    if(region && region!=='__all__') chips.push(`리전=${region}`);
+    const box = document.getElementById('m-chips');
+    if(box) box.innerHTML = chips.map(t=>`<span class="chip">${t}</span>`).join('');
+  }
+  ['m-month','m-customer','m-region'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('change', renderMonthlyChips);
+  });
+  renderMonthlyChips();
+
+  // Chart.js 데모 추세
+  if(window.Chart && document.getElementById('kpiTrend')){
+    const ctx=document.getElementById('kpiTrend').getContext('2d');
+    const labels = Array.from({length:30},(_,i)=>`D${i+1}`);
+    new Chart(ctx,{
+      type:'line',
+      data:{
+        labels,
+        datasets:[
+          {label:'Availability %', data:labels.map(()=>99.5+Math.random()*0.6), yAxisID:'y', tension:.3},
+          {label:'Success Rate %', data:labels.map(()=>99+Math.random()*0.7), yAxisID:'y', tension:.3},
+          {label:'p95(ms)', data:labels.map(()=>220+Math.random()*40), yAxisID:'y1', tension:.3}
+        ]
+      },
+      options:{
+        responsive:true,
+        interaction:{mode:'index', intersect:false},
+        plugins:{legend:{position:'bottom'}},
+        scales:{
+          y:{type:'linear', position:'left', suggestedMin:98.5, suggestedMax:100},
+          y1:{type:'linear', position:'right', suggestedMin:180, suggestedMax:300, grid:{drawOnChartArea:false}}
+        }
+      }
+    });
+  }
+})();
+</script>
+
+        <!-- 기타 메뉴(플레이스홀더) -->
+        <div class="submenu-content" id="content-troubleshooting"><div class="card"><div class="card-header">장애처리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-tech-support"><div class="card"><div class="card-header">기술지원</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-data-collection"><div class="card"><div class="card-header">데이터 수집 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-ab-test"><div class="card"><div class="card-header">AB테스트 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+
+        <div class="submenu-content" id="content-saas-product"><div class="card"><div class="card-header">상품 / 기능 정의</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-client-iam"><div class="card"><div class="card-header">관리자 ID 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-client-tos"><div class="card"><div class="card-header">고객사 약관 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-client-privacy"><div class="card"><div class="card-header">고객사 개인정보처리방침 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-user-manage"><div class="card"><div class="card-header">User 생성/정보 및 권한 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-user-history"><div class="card"><div class="card-header">사용자 이력 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-billing-report"><div class="card"><div class="card-header">과금리포트</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-billing-invoice"><div class="card"><div class="card-header">인보이스</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-billing-payment"><div class="card"><div class="card-header">수납</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-security"><div class="card"><div class="card-header">보안</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-compliance"><div class="card"><div class="card-header">컴플라이언스</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-settings-language"><div class="card"><div class="card-header">언어 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-settings-display"><div class="card"><div class="card-header">화면 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-settings-call"><div class="card"><div class="card-header">통화 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-settings-tutorial"><div class="card"><div class="card-header">시작하기 튜토리얼</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="engineModal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle"></h3>
+      <div id="modalBody"></div>
+      <button class="btn-close" id="closeModal">닫기</button>
+    </div>
+  </div>
+
+  <script>
+  /* ========= 좌측 메뉴/탭 토글 (원본) ========= */
+  document.querySelectorAll('.main-menu-toggle').forEach(toggle=>{
+    toggle.addEventListener('click',function(){
+      const submenuId=this.getAttribute('data-menu');
+      const submenuList=document.getElementById(submenuId);
+      const isActive=this.classList.contains('active');
+
+      document.querySelectorAll('.main-menu-toggle').forEach(t=>{t.classList.remove('active'); t.querySelector('.menu-arrow').textContent='chevron_right';});
+      document.querySelectorAll('.submenu-list').forEach(l=>l.classList.remove('open'));
+
+      if(!isActive){
+        this.classList.add('active');
+        this.querySelector('.menu-arrow').textContent='expand_more';
+        submenuList.classList.add('open');
+        const activeSubmenu=submenuList.querySelector('.submenu-link.active');
+        if(!activeSubmenu){ submenuList.querySelector('.submenu-link')?.click(); }
+        else { activeSubmenu.click(); }
+      }
+    });
+  });
+
+  document.querySelectorAll('.submenu-link').forEach(link=>{
+    link.addEventListener('click',function(e){
+      e.preventDefault();
+      const targetContentId=this.getAttribute('data-target');
+      const submenuTitle=this.textContent.trim().replace(/^\d+\)\s*/,'');
+
+      const parentToggle=this.closest('.submenu-list')?.previousElementSibling;
+      let mainTitle='';
+      if(parentToggle){
+        const titleDiv=parentToggle.querySelector('div');
+        const icon=titleDiv?.querySelector('.material-symbols-outlined');
+        const textNode=titleDiv?.cloneNode(true);
+        if(textNode && icon) textNode.removeChild(textNode.querySelector('.material-symbols-outlined'));
+        mainTitle=(textNode?.textContent || '').trim();
+      }
+
+      document.querySelectorAll('.submenu-link').forEach(l=>l.classList.remove('active'));
+      this.classList.add('active');
+      document.querySelectorAll('.submenu-content').forEach(c=>c.classList.remove('active'));
+      document.getElementById(targetContentId).classList.add('active');
+
+      const pathHTML=`홈 <span style="margin:0 5px;">&gt;</span> ${mainTitle} <span style="margin:0 5px;">&gt;</span> <span id="current-submenu-title" style="font-weight:700;">${submenuTitle}</span>`;
+      document.querySelector('.current-menu-path').innerHTML=pathHTML;
+
+      const firstTabBtn=document.querySelector(`#${targetContentId} .tabs .tab-btn`);
+      const allTabContent=document.querySelectorAll(`#${targetContentId} .tab-content`);
+      allTabContent.forEach(c=>c.classList.remove('active'));
+      if(firstTabBtn){
+        document.querySelectorAll(`#${targetContentId} .tabs .tab-btn`).forEach(btn=>btn.classList.remove('active'));
+        firstTabBtn.classList.add('active');
+        document.getElementById(firstTabBtn.getAttribute('data-target'))?.classList.add('active');
+      }
+
+      // 테이블 UX 초기화 훅
+      if(targetContentId==='content-ai-model'){ initHistory(); }
+      if(targetContentId==='content-operation-report'){ initOperationReport(); }
+    });
+  });
+
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('.tab-btn');
+    if(!btn) return;
+    const targetId=btn.getAttribute('data-target');
+    const container=btn.closest('.card');
+    container.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    container.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById(targetId)?.classList.add('active');
+
+    // 탭별 초기화
+    if(targetId==='tab-ondev-model'){ initHistory(); }
+    if(targetId==='tab-sla-summary' || targetId==='tab-monthly-report' || targetId==='tab-incident-report'){ initOperationReport(targetId); }
+  });
+
+  /* ========= (AI 모델) 히스토리: 필터/정렬 (원본) ========= */
+  const SKEY='ixio.history.state.v1';
+  const historyTable=document.getElementById('history-table');
+  const tbody=historyTable?.querySelector('tbody')||null;
+  const rows=tbody?[...tbody.querySelectorAll('tr')]:[];
+
+  function uniqueValues(idx){
+    return [...new Set(rows.map(r=>r.cells[idx].textContent.trim()))].sort((a,b)=>a.localeCompare(b));
+  }
+  const COL={ customer:0, engine:1, version:2, os:3, title:4, update:5, addr:6, date:7, latest:8 };
+
+  function fillCustomer(){
+    const sel=document.getElementById('history-customer');
+    if(!sel) return;
+    const values=uniqueValues(COL.customer);
+    sel.innerHTML='<option value="__all__">전체</option>'+values.map(v=>`<option value="${v}">${v}</option>`).join('');
+  }
+
+  function buildMulti(id, values){
+    const box=document.getElementById(id);
+    if(!box) return;
+    const panel=box.querySelector('.multi-panel');
+    panel.dataset.count=values.length;
+    panel.insertAdjacentHTML('beforeend', values.map(v=>`<label class="multi-option"><input type="checkbox" value="${v}"/><span>${v}</span></label>`).join(''));
+    const search=panel.querySelector('.multi-search');
+    const toggle=box.querySelector('.multi-toggle');
+
+    toggle.addEventListener('click', ()=>{
+      const opened=document.querySelector('.multi.open');
+      if(opened && opened!==box) opened.classList.remove('open');
+      box.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', box.classList.contains('open'));
+    });
+    document.addEventListener('click', e=>{
+      if(!box.contains(e.target)) box.classList.remove('open');
+    });
+    search.addEventListener('input', ()=>{
+      const q=search.value.trim().toLowerCase();
+      panel.querySelectorAll('.multi-option').forEach(opt=>{
+        const t=opt.textContent.trim().toLowerCase();
+        opt.style.display=t.includes(q)?'flex':'none';
+      });
+    });
+  }
+
+  function renderChips(state){
+    const area=document.getElementById('state-chips');
+    if(!area) return;
+    const chips=[];
+    if(state.customer && state.customer!=='__all__') chips.push(`고객사=${state.customer}`);
+    if(state.engine?.length) chips.push(`엔진=${state.engine.join(', ')}`);
+    if(state.os?.length) chips.push(`OS=${state.os.join(', ')}`);
+    area.innerHTML=chips.map(t=>`<span class="chip">${t}</span>`).join('');
+  }
+
+  function applyFilter(state){
+    if(!rows.length) return;
+    let visible=0;
+    rows.forEach(tr=>{
+      const c=(tr.cells[COL.customer].textContent||'').trim();
+      const e=(tr.cells[COL.engine].textContent||'').trim();
+      const o=(tr.cells[COL.os].textContent||'').trim();
+      const okCustomer=(state.customer==='__all__'|| state.customer===c);
+      const okEngine=(!state.engine?.length)|| state.engine.some(v=>e.includes(v));
+      const okOS=(!state.os?.length)|| state.os.includes(o);
+      const show=okCustomer && okEngine && okOS;
+      tr.style.display= show? '' : 'none';
+      if(show) visible++;
+    });
+    document.getElementById('empty-msg')?.style && (document.getElementById('empty-msg').style.display=visible? 'none':'block');
+  }
+
+  function parseDate(s){ return new Date(s.replace(/\./g,'-')); }
+  function cmp(a,b,key){
+    if(!a||!b) return 0;
+    const ia=COL[key];
+    const va=a.cells[ia]?.textContent.trim()||'';
+    const vb=b.cells[ia]?.textContent.trim()||'';
+    if(key==='date') return parseDate(va)-parseDate(vb);
+    if(key==='version'){
+      const pa=va.replace(/^v/i,'').split('.').map(Number), pb=vb.replace(/^v/i,'').split('.').map(Number);
+      for(let i=0;i<Math.max(pa.length,pb.length);i++){ const da=(pa[i]||0)-(pb[i]||0); if(da!==0) return da; }
+      return 0;
+    }
+    return va.localeCompare(vb,'ko',{numeric:true});
+  }
+  function applySort(sorters){
+    if(!tbody) return;
+    const arr=rows.slice();
+    arr.sort((r1,r2)=>{
+      for(const s of sorters){
+        const d=cmp(r1,r2,s.key);
+        if(d!==0) return s.dir==='asc'? d : -d;
+      }
+      return 0;
+    });
+    const frag=document.createDocumentFragment();
+    arr.forEach(r=>frag.appendChild(r));
+    tbody.appendChild(frag);
+  }
+  function attachSortUI(){
+    if(!historyTable) return;
+    const state = loadState();
+    const ths = [...historyTable.tHead.rows[0].cells];
+    ths.forEach(th=>{
+      const key = th.dataset.key; if(!key) return;
+      const box = th.querySelector('.sorter'); if(!box) return;
+      box.innerHTML = '';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sort-toggle';
+      btn.setAttribute('aria-label', `${th.textContent.trim()} 정렬 (Shift+클릭 다중 정렬)`);
+      const up = document.createElement('span'); up.className = 'sort-icon sort-up'; up.textContent = '▲';
+      const down = document.createElement('span'); down.className = 'sort-icon sort-down'; down.textContent = '▼';
+      btn.append(up, down); box.append(btn);
+
+      const thisSorter = (state.sorters||[]).find(s=>s.key===key);
+      if(thisSorter){ th.setAttribute('aria-sort', thisSorter.dir==='asc' ? 'ascending' : 'descending'); }
+      else{ th.removeAttribute('aria-sort'); }
+
+      function cycle(e){
+        const multi = e && e.shiftKey;
+        let sorters = multi ? (state.sorters||[]) : [];
+        const cur = (state.sorters||[]).find(s=>s.key===key)?.dir || 'none';
+        const next = cur === 'none' ? 'asc' : (cur === 'asc' ? 'desc' : 'none');
+        sorters = sorters.filter(s=>s.key!==key);
+        if(next !== 'none') sorters.push({key, dir: next});
+        state.sorters = sorters; saveState(state);
+        ths.forEach(t=>t.removeAttribute('aria-sort'));
+        if(next==='asc') th.setAttribute('aria-sort', 'ascending');
+        if(next==='desc') th.setAttribute('aria-sort', 'descending');
+        applySort(sorters);
+      }
+      btn.addEventListener('click', cycle);
+      btn.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); cycle(ev); } });
+    });
+
+    if(!(state.sorters && state.sorters.length)){
+      state.sorters = [{key:'date', dir:'desc'}];
+      saveState(state);
+    }
+    applySort(state.sorters);
+
+    const thMap = Object.fromEntries(ths.map(th=>[th.dataset.key, th]));
+    (state.sorters||[]).forEach(s=>{
+      const th = thMap[s.key]; if(!th) return;
+      th.setAttribute('aria-sort', s.dir==='asc'?'ascending':'descending');
+    });
+  }
+  function loadState(){ try{ return JSON.parse(sessionStorage.getItem(SKEY)) || {}; }catch{ return {}; } }
+  function saveState(s){ sessionStorage.setItem(SKEY, JSON.stringify(s)); }
+
+  /* ===== 엔진 Info 아이콘 + 모달 ===== */
+  const modal=document.getElementById('engineModal');
+  const modalTitle=document.getElementById('modalTitle');
+  const modalBody=document.getElementById('modalBody');
+  const closeModal=document.getElementById('closeModal');
+
+  const engineDetails={
+    "STT": {
+      title:"STT (Speech-to-Text)",
+      kv:{ "기능":"음성 → 텍스트 변환", "권장 사용처":"통화 요약, 검색 인덱싱, 자막", "지원 예시":"영어/말레이/한국어(고객사 패키지별 상이)"},
+      effects:["문장 단위 인식 안정성 향상","커스텀 용어/도메인 사전 적용 가능","온디바이스 저지연(네트워크 독립)"],
+      metrics:["WER(단어 오류율)","RTF(실시간성 지표)","OOV 인식률(용어 사전 효과)"],
+      cautions:["소음 환경에서는 NR/VAD와 조합 권장","사전 미등록 전문용어는 인식률 저하 가능"]
+    },
+    "NR": {
+      title:"NR (Noise Reduction)",
+      kv:{ "기능":"배경 소음 억제/감소", "권장 사용처":"야외/차량/매장 등 소음 환경","지원 예시":"AEC(에코 제거)와 병행 가능"},
+      effects:["SNR 개선으로 STT 품질 간접 향상","연속 대화에서 피로도 감소"],
+      metrics:["SNR(dB) 개선폭","PESQ/ViSQOL(청취 품질)"],
+      cautions:["과도한 NR은 음성 왜곡 가능 → 보정 파라미터 튜닝 필요"]
+    },
+    "STT/NR": {
+      title:"STT/NR (통합 인식+소음저감)",
+      kv:{ "기능":"NR 전처리 → STT 파이프라인 통합", "권장 사용처":"실사용 통화/콜센터/현장 통화","지원 예시":"영/말레이 번들, 한국어 번들"},
+      effects:["잡음 환경 인식률 ↑, 지연 최소화","도메인 사전+온디바이스로 개인정보 노출 최소화"],
+      metrics:["WER @Noisy","E2E 지연(ms)","CPU/GPU 점유율(모바일)"],
+      cautions:["디바이스 성능별 모델 사이즈 선택 필요","NR 강도 과하면 화자 음질 저하"]
+    },
+    "ITN": {
+      title:"ITN (Inverse Text Normalization)",
+      kv:{ "기능":"텍스트 정규화(“십오만 삼천” → “153,000”)", "권장 사용처":"금액/날짜/시간/주소 등 구조화","지원 예시":"다국어 숫자·단위/약어 변환"},
+      effects:["데이터 정제 비용 절감","검색·통계·청구 연계 정확도 향상"],
+      metrics:["정규화 정확도(Precision/Recall)","에러 유형(과정규화/미정규화)"],
+      cautions:["언어·지역 포맷 규칙 차이 반영 필요","모호한 발화는 룰/ML 하이브리드 권장"]
+    },
+    "VP": {
+      title:"VP (Voice Processing: VAD/AEC/NR)",
+      kv:{ "기능":"음성 구간 검출(VAD), 에코 제거(AEC), 소음 저감(NR)", "권장 사용처":"실시간 콜, 듀플렉스 통화", "지원 예시":"Android/iOS 네이티브 DSP 연동"},
+      effects:["불필요 무음/잡음 컷으로 처리량↓","발화 시작/끝 탐지 정확도↑, 인터럽션 UX 개선"],
+      metrics:["VAD F1(발화 구간 탐지)","AEC ERLE(dB)","지연(ms)"],
+      cautions:["기기별 마이크/오디오 스택 편차 고려","AEC 튜닝 실패 시 잔향/지연 이슈 발생"]
+    }
+  };
+
+  /* ===== KPI Info 정의 추가 ===== */
+  const kpiDetails = {
+    "Server Availability": {
+      title: "Server Availability",
+      kv: {
+        "의미": "월간 기준으로 서비스가 정상적으로 응답한 시간 비율",
+        "측정 방법": "((총 시간 - 장애/점검 시간) ÷ 총 시간) × 100",
+        "목표 예시": "≥ 99%"
+      },
+      effects: [
+        "SLA 위반 여부를 가장 먼저 판단하는 상위 지표",
+        "다운타임 1건만 있어도 퍼센트가 크게 떨어질 수 있음"
+      ],
+      metrics: [
+        "월간 가용성(%)",
+        "다운타임(분)",
+        "Error Budget 소진율"
+      ],
+      cautions: [
+        "계획 점검 시간을 포함/제외할지 합의 필요",
+        "리전/고객사별로 따로 계산할 수 있음"
+      ]
+    },
+    "API Response Time (avg)": {
+      title: "API Response Time (avg)",
+      kv: {
+        "의미": "API 요청 ~ 응답까지 걸린 평균 시간(ms)",
+        "권장": "사용자 체감 200ms 이하 유지",
+        "보조": "p95, p99 같이 고분위수로도 함께 봄"
+      },
+      effects: [
+        "지연이 커지면 실제 ASR/사기탐지 품질이 좋아도 UX는 나빠짐",
+        "게이트웨이/외부 모델 호출 구간에서 지연이 많이 발생"
+      ],
+      metrics: [
+        "avg(ms)",
+        "p95(ms)",
+        "게이트웨이 구간 지연"
+      ],
+      cautions: [
+        "배치/관리성 API는 별도 그룹으로 빼는 게 안전",
+        "외부 API 연동 시 타사 SLA에 영향 받음"
+      ]
+    },
+    "API Success Rate": {
+      title: "API Success Rate",
+      kv: {
+        "의미": "전체 호출 중 성공(2xx/정상 코드) 비율",
+        "측정 방법": "(성공 호출 수 ÷ 전체 호출 수) × 100",
+        "목표 예시": "≥ 99%"
+      },
+      effects: [
+        "게이트웨이 장애, 인증 실패, 백엔드 오류를 한눈에 확인",
+        "구간별 모듈 성공률과 비교해 병목 파악 가능"
+      ],
+      metrics: [
+        "성공률(%)",
+        "실패 코드 TOP5",
+        "고객사/리전 별 성공률"
+      ],
+      cautions: [
+        "클라이언트 잘못(400대)을 제외할지 포함할지 정의가 필요",
+        "일시적 서킷브레이크/재시도 로직이 있으면 실제 사용자 영향과 차이가 날 수 있음"
+      ]
+    },
+    "STT CRR": {
+      title: "STT CRR (Correct Recognition Rate)",
+      kv: {
+        "의미": "전체 단어 중 정확히 인식된 비율",
+        "적용": "On-device STT 품질 평가",
+        "언어 예시": "Malay, English, Korean 등"
+      },
+      effects: [
+        "통화 요약 등 2차 LLM 처리를 올려도 처음 인식률이 낮으면 결과가 나빠짐"
+      ],
+      metrics: [
+        "CRR(%)",
+        "데이터셋/도메인별 CRR"
+      ],
+      cautions: [
+        "소음/사투리/전문어가 많을수록 떨어짐 → NR/사전과 함께 봐야 함"
+      ]
+    },
+    "STT WRR": {
+      title: "STT WRR (Word Recognition Rate)",
+      kv: {
+        "의미": "음성에 등장한 단어를 얼마나 인식했는지 보는 지표",
+        "목표 예시": "≥ 75%",
+        "현재 이슈": "영어 WRR 저하"
+      },
+      effects: [
+        "WRR 하락은 곧바로 고객사가 보는 SLA 위반으로 이어질 수 있음"
+      ],
+      metrics: [
+        "WRR(%)",
+        "언어별 WRR",
+        "소스별 WRR(현장/콜센터)"
+      ],
+      cautions: [
+        "테스트 코퍼스가 실제 트래픽과 다르면 수치 차이 발생",
+        "언어 혼합(Code-switching)은 별도 튜닝 필요"
+      ]
+    },
+    "Scam Detection TPR": {
+      title: "Scam Detection TPR",
+      kv: {
+        "의미": "실제 사기/보이스피싱을 얼마나 잘 잡아냈는지(재현율)",
+        "목표 예시": "≥ 90%",
+        "사용처": "통신사/고객사 보안 탐지"
+      },
+      effects: [
+        "TPR이 높을수록 보안팀 만족도↑",
+        "신규 룰/모델 배포 후 가장 먼저 확인하는 값"
+      ],
+      metrics: [
+        "TPR(%)",
+        "탐지된 케이스 수",
+        "모델/룰 버전"
+      ],
+      cautions: [
+        "TPR만 올리면 FPR(오탐)도 같이 올라갈 수 있음 → 균형 필요"
+      ]
+    },
+    "Scam Detection FPR": {
+      title: "Scam Detection FPR",
+      kv: {
+        "의미": "정상 통화를 잘못 사기로 판단한 비율(오탐)",
+        "목표 예시": "≤ 8%",
+        "현재 이슈": "특정 리전 false alarm"
+      },
+      effects: [
+        "FPR가 높으면 사용자/고객사 불만이 바로 올라옴",
+        "배포시 게이팅(A/B) 없으면 리전에 일괄 영향"
+      ],
+      metrics: [
+        "FPR(%)",
+        "리전별 FPR",
+        "룰/스코어 임계값"
+      ],
+      cautions: [
+        "데이터가 적은 리전은 분모가 작아 수치가 요동칠 수 있음",
+        "신규 룰은 관찰 기간을 두고 단계적 확장 필요"
+      ]
+    }
+  };
+
+  function detailHTML(obj){
+    const kv = Object.entries(obj.kv||{}).map(([k,v])=>`<div>${k}</div><div>${v}</div>`).join('');
+    const effects = (obj.effects||[]).map(x=>`<li>${x}</li>`).join('');
+    const metrics = (obj.metrics||[]).map(x=>`<span class="chip">${x}</span>`).join('');
+    const cautions = (obj.cautions||[]).map(x=>`<li>${x}</li>`).join('');
+    return `
+      <h4>개요</h4>
+      <div class="kv">${kv}</div>
+      <h4>주요 효과</h4>
+      <ul class="bul">${effects}</ul>
+      <h4>측정 지표(예시)</h4>
+      <div class="metric">${metrics}</div>
+      <h4>주의 사항</h4>
+      <ul class="bul">${cautions}</ul>
+    `;
+  }
+  function openEngineModal(type){
+    const key = engineDetails[type] ? type : (engineDetails[type?.split('/')[0]] ? type.split('/')[0] : null);
+    modalTitle.innerText = (engineDetails[key]?.title || (type + " 엔진 정보"));
+    modalBody.innerHTML = engineDetails[key] ? detailHTML(engineDetails[key]) : "상세 정보가 없습니다.";
+    modal.style.display='flex';
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  /* ===== KPI 모달용 HTML 생성 ===== */
+  function kpiDetailHTML(obj){
+    const kv = Object.entries(obj.kv || {})
+      .map(([k,v]) => `<div>${k}</div><div>${v}</div>`)
+      .join('');
+    const effects = (obj.effects || []).map(x => `<li>${x}</li>`).join('');
+    const metrics = (obj.metrics || []).map(x => `<span class="chip">${x}</span>`).join('');
+    const cautions = (obj.cautions || []).map(x => `<li>${x}</li>`).join('');
+
+    return `
+      <h4>개요</h4>
+      <div class="kv">${kv}</div>
+      <h4>관련 의미/효과</h4>
+      <ul class="bul">${effects}</ul>
+      <h4>참고 지표</h4>
+      <div class="metric">${metrics}</div>
+      <h4>주의 사항</h4>
+      <ul class="bul">${cautions}</ul>
+    `;
+  }
+
+  function openKpiModal(metric){
+    const info = kpiDetails[metric];
+    modalTitle.innerText = info ? info.title : metric;
+    modalBody.innerHTML = info ? kpiDetailHTML(info) : "상세 정보가 없습니다.";
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  closeModal&& (closeModal.onclick=()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+  window.addEventListener('click', e=>{ if(e.target===modal){ closeModal?.click(); } });
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.style.display==='flex'){ closeModal?.click(); } });
+
+  function injectInfoIcons(tableSel){
+    const infoMap={ "STT/NR":"인식+소음저감 통합", "ITN":"정규화(숫자/단위/약어)", "VP":"VAD/AEC/NR", "STT":"음성→텍스트", "NR":"소음 제거" };
+    document.querySelectorAll(`${tableSel} tbody tr`).forEach(tr=>{
+      const engineCell = tr.cells[1];
+      if(!engineCell || engineCell.querySelector('.info-icon')) return;
+      const type = engineCell.textContent.trim();
+      if(!type) return;
+      const tip = infoMap[type] || `${type} 엔진`;
+      const span = document.createElement('span');
+      span.className='info-icon';
+      span.dataset.type=type;
+      span.dataset.info=tip;
+      span.textContent='info';
+      span.title='자세히 보기';
+      span.addEventListener('click', (e)=>{ e.stopPropagation(); openEngineModal(type); });
+      engineCell.appendChild(span);
+    });
+  }
+
+  /* ===== KPI 테이블에 아이콘 주입 ===== */
+  function injectKpiInfo(tableSelector){
+    const table = document.querySelector(tableSelector);
+    if (!table) return;
+
+    const rows = table.tBodies[0]?.rows || [];
+    [...rows].forEach(tr => {
+      const metricCell = tr.cells[0];
+      if (!metricCell) return;
+
+      const metricName = metricCell.textContent.trim();
+      if (!kpiDetails[metricName]) return;
+      if (metricCell.querySelector('.info-icon')) return;
+
+      const tip = kpiDetails[metricName].kv?.["의미"] || metricName + " 설명";
+      const span = document.createElement('span');
+      span.className = 'info-icon';
+      span.dataset.info = tip;
+      span.dataset.metric = metricName;
+      span.textContent = 'info';
+      span.title = '자세히 보기';
+
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openKpiModal(metricName);
+      });
+
+      metricCell.appendChild(span);
+    });
+  }
+
+  function buildUpdateCells(scope){
+    const targets = scope.querySelectorAll('td.col-update');
+    targets.forEach(td=>{
+      if(td.dataset.enhanced) return;
+      const text = td.getAttribute('title') || td.textContent.trim();
+      td.innerHTML = `
+        <span class="update-wrap" role="group">
+          <span class="update-text">${text}</span>
+          <span class="update-fade"></span>
+          <button type="button" class="update-toggle" aria-expanded="false" aria-label="업데이트 상세 더보기">
+            <span class="material-symbols-outlined">expand_more</span> 더보기
+          </button>
+        </span>
+      `;
+      const wrap = td.querySelector('.update-wrap');
+      const btn = td.querySelector('.update-toggle');
+      btn.addEventListener('click', ()=>{
+        const exp = wrap.classList.toggle('expanded');
+        btn.setAttribute('aria-expanded', String(exp));
+        btn.innerHTML = exp
+          ? `<span class="material-symbols-outlined">expand_less</span> 접기`
+          : `<span class="material-symbols-outlined">expand_more</span> 더보기`;
+      });
+      td.dataset.enhanced = '1';
+    });
+  }
+
+  function enhanceTablesForUX(){
+    buildUpdateCells(document);
+    injectInfoIcons('#status-table');
+    injectInfoIcons('#history-table');
+  }
+
+  function initHistory(){
+    if(!historyTable) return;
+    fillCustomer();
+    const engines=[...new Set(rows.map(r=>r.cells[COL.engine].textContent.trim()))].sort((a,b)=>a.localeCompare(b));
+    const oses=[...new Set(rows.map(r=>r.cells[COL.os].textContent.trim()))].sort((a,b)=>a.localeCompare(b));
+
+    if(!document.getElementById('engine-multi').dataset.ready){
+      buildMulti('engine-multi', engines);
+      document.getElementById('engine-multi').dataset.ready='1';
+    }
+    if(!document.getElementById('os-multi').dataset.ready){
+      buildMulti('os-multi', oses);
+      document.getElementById('os-multi').dataset.ready='1';
+    }
+
+    const customerSel=document.getElementById('history-customer');
+    const engineBox=document.getElementById('engine-multi');
+    const osBox=document.getElementById('os-multi');
+
+    const st=loadState();
+    if(st.customer){ customerSel.value=st.customer; }
+    if(st.engine?.length){ engineBox.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=st.engine.includes(cb.value)); }
+    if(st.os?.length){ osBox.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=st.os.includes(cb.value)); }
+
+    function gather(){
+      const state=loadState();
+      state.customer=customerSel.value;
+      state.engine=[...engineBox.querySelectorAll('input[type=checkbox]:checked')].map(i=>i.value);
+      state.os=[...osBox.querySelectorAll('input[type=checkbox]:checked')].map(i=>i.value);
+      saveState(state); renderChips(state); applyFilter(state);
+    }
+    customerSel.onchange=gather;
+    engineBox.addEventListener('change',e=>{ if(e.target.matches('input[type=checkbox]')) gather(); });
+    osBox.addEventListener('change',e=>{ if(e.target.matches('input[type=checkbox]')) gather(); });
+
+    document.getElementById('filter-reset').onclick=()=>{
+      customerSel.value='__all__';
+      engineBox.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+      osBox.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+      const s=loadState(); s.customer='__all__'; s.engine=[]; s.os=[]; saveState(s);
+      renderChips(s); applyFilter(s);
+    };
+
+    renderChips(loadState());
+    applyFilter(loadState());
+    attachSortUI();
+    enhanceTablesForUX();
+  }
+
+  /* ===== (운영/분석 리포트) 탭별 간단 정렬 초기화 ===== */
+  function attachLightSort(tableEl, opts={}){
+    if(!tableEl) return;
+    const ths = [...tableEl.tHead.rows[0].cells];
+    const sevOrder = { 'L3':3,'Critical (L3)':3, 'L2':2,'Major (L2)':2, 'L1':1,'Minor (L1)':1 };
+
+    const text=(tr, idx)=>(tr.cells[idx]?.innerText||'').trim();
+    const cmpFactory=(idx)=> (a,b)=>{
+      if(opts.severityFirst && idx===opts.severityCol){
+        const sa=a.dataset.sev||text(a,idx), sb=b.dataset.sev||text(b,idx);
+        const va=sevOrder[sa]||0, vb=sevOrder[sb]||0; return vb-va;
+      }
+      const ta=text(a,idx), tb=text(b,idx);
+      const na=parseFloat(ta.replace(/[^\d.]/g,'')), nb=parseFloat(tb.replace(/[^\d.]/g,''));
+      if(!isNaN(na) && !isNaN(nb)) return na-nb;
+      return ta.localeCompare(tb,'en',{numeric:true});
+    };
+
+    ths.forEach((th, idx)=>{
+      const box = th.querySelector('.sorter'); if(!box) return;
+      box.innerHTML='';
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='sort-toggle';
+      const up=document.createElement('span'); up.className='sort-icon sort-up'; up.textContent='▲';
+      const down=document.createElement('span'); down.className='sort-icon sort-down'; down.textContent='▼';
+      btn.append(up,down); box.append(btn);
+
+      let dir=null;
+      const cmp=cmpFactory(idx);
+      btn.addEventListener('click', ()=>{
+        dir = dir==='asc' ? 'desc' : dir==='desc' ? null : 'asc';
+        const rows=[...tableEl.tBodies[0].rows];
+        if(dir){
+          rows.sort((a,b)=> dir==='asc' ? cmp(a,b) : -cmp(a,b));
+          const frag=document.createDocumentFragment();
+          rows.forEach(r=>frag.appendChild(r));
+          tableEl.tBodies[0].appendChild(frag);
+        }
+        ths.forEach(t=>t.removeAttribute('aria-sort'));
+        if(dir==='asc') th.setAttribute('aria-sort','ascending');
+        if(dir==='desc') th.setAttribute('aria-sort','descending');
+      });
+    });
+  }
+
+  function initOperationReport(targetId){
+    // SLA 요약
+    if(!targetId || targetId==='tab-sla-summary'){
+      attachLightSort(document.getElementById('sla-severity-table'), {severityFirst:true, severityCol:0});
+      attachLightSort(document.getElementById('sla-metrics-table'));
+    }
+    // 월간 리포트
+    if(!targetId || targetId==='tab-monthly-report'){
+      attachLightSort(document.getElementById('monthly-kpi-table'));
+      attachLightSort(document.getElementById('monthly-violation-table'));
+      // 필터 칩은 위에서 한 번 만들었으므로 여기서는 KPI 아이콘만 주입
+      injectKpiInfo('#monthly-kpi-table');
+    }
+    // 장애 리포트
+    if(!targetId || targetId==='tab-incident-report'){
+      attachLightSort(document.getElementById('incident-table'), {severityFirst:true, severityCol:2});
+    }
+  }
+
+  /* 초기 표시: 운영/분석 리포트 탭 준비 + AI 모델 UX 보강 */
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.submenu-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById('content-operation-report').classList.add('active');
+
+    const firstTabBtn=document.querySelector('#content-operation-report .tabs .tab-btn');
+    if(firstTabBtn){
+      document.querySelectorAll('#content-operation-report .tab-btn').forEach(btn=>btn.classList.remove('active'));
+      firstTabBtn.classList.add('active');
+      document.querySelectorAll('#content-operation-report .tab-content').forEach(tc=>tc.classList.remove('active'));
+      const firstTarget=firstTabBtn.getAttribute('data-target');
+      document.getElementById(firstTarget)?.classList.add('active');
+    }
+
+    initOperationReport();
+    enhanceTablesForUX();
+    injectKpiInfo('#monthly-kpi-table');
+  });
+  </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.Chart) return;
+
+  const css = getComputedStyle(document.documentElement);
+  const C_PRIMARY = css.getPropertyValue('--brand-primary').trim() || '#2563EB';
+  const C_NEUTRAL = css.getPropertyValue('--border-strong').trim() || '#CBD5E1';
+  const C_SUCCESS = css.getPropertyValue('--success').trim() || '#14B8A6';
+
+  const num = (s)=> typeof s==='number' ? s : parseFloat(String(s||'').replace(/[^\d.]/g,''));
+
+  const slaVal = num(document.getElementById('kpi-sla')?.textContent || 86);
+  const elSla = document.getElementById('chart-sla');
+  if (elSla) new Chart(elSla, {
+    type: 'doughnut',
+    data: { labels:['달성','미달'],
+      datasets:[{ data:[slaVal, 100 - slaVal], backgroundColor:[C_PRIMARY, C_NEUTRAL] }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'72%', radius:'90%',
+      plugins:{ legend:{display:false}, tooltip:{enabled:true} }
+    }
+  });
+
+  const avail = num(document.getElementById('kpi-avail')?.textContent || '99.92');
+  const elAvail = document.getElementById('chart-avail');
+  if (elAvail) new Chart(elAvail, {
+    type: 'bar',
+    data: {
+      labels:['Availability'],
+      datasets:[
+        { type:'line', data:[99], borderColor:C_SUCCESS, borderWidth:2, borderDash:[4,4],
+          pointRadius:0, fill:false, order:0 },
+        { type:'bar', data:[avail], backgroundColor:C_PRIMARY, borderWidth:0, order:1 }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+      scales:{
+        x:{ grid:{display:false} },
+        y:{ min:98.5, max:100, ticks:{ stepSize:0.5 }, grid:{ color:C_NEUTRAL } }
+      }
+    }
+  });
+
+  const elRt = document.getElementById('chart-rt');
+  if (elRt) {
+    const labels14 = Array.from({length:14}, (_,i)=>`D-${14-i}`);
+    const rtSeries = labels14.map(()=> 210 + Math.round(Math.random()*50));
+    new Chart(elRt, {
+      type: 'line',
+      data: { labels:labels14,
+        datasets:[{ data:rtSeries, fill:false, borderColor:C_PRIMARY, tension:.3, pointRadius:0, borderWidth:2 }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+        scales:{ x:{ grid:{display:false} }, y:{ suggestedMin:160, suggestedMax:300, grid:{ color:C_NEUTRAL } } }
+      }
+    });
+  }
+
+  const sr = num(document.getElementById('kpi-sr')?.textContent || '99.3');
+  const elSr = document.getElementById('chart-success');
+  if (elSr) new Chart(elSr, {
+    type: 'doughnut',
+    data: { labels:['성공','실패'],
+      datasets:[{ data:[sr, 100 - sr], backgroundColor:[C_PRIMARY, C_NEUTRAL] }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'72%', radius:'90%',
+      plugins:{ legend:{display:false}, tooltip:{enabled:true} }
+    }
+  });
+
+  document.querySelectorAll('#content-operation-report .tab-btn')
+    .forEach(b => b.addEventListener('click', () =>
+      setTimeout(() => {
+        for (const id in Chart.instances) { Chart.instances[id].resize?.(); }
+      }, 50)
+    ));
+});
+</script>
+</body>
+</html>
