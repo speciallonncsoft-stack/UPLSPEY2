@@ -1,3417 +1,1674 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="#F6F7F4" name="theme-color"/>
-<title>CallX — 전화는 그대로, 해야 할 일은 줄어들도록</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-    :root {
-      --callx-cobalt: #4664FF;
-      --callx-cobalt-hover: #3855EF;
-      --callx-cobalt-pressed: #304BDC;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F6F7F8" />
+  <title>CALL X — 가족에게 걸려온 수상한 전화, 혼자 판단하게 두지 않도록</title>
+  <meta name="description" content="키즈·시니어에게 위험한 전화가 걸려오거나 통화 중 위험 신호가 감지되면 보호자에게 알리고, 필요한 순간에는 함께 개입할 수 있는 CALL X 컨셉입니다." />
 
-      --callx-ink: #0B0E14;
-      --callx-cloud: #F6F7F4;
-      --callx-ice: #E9EDFF;
-      --callx-signal: #C9FF57;
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet" />
 
-      --callx-text-primary: #11141A;
-      --callx-text-secondary: #60656F;
-      --callx-text-tertiary: #969AA3;
+  <style>
+    :root{
+      --bg:#F6F7F8;
+      --surface:#FFFFFF;
+      --surface-soft:#EEF2F7;
+      --surface-blue:#EDF1FF;
+      --surface-green:#F1F5E3;
+      --ink:#11141A;
+      --text:#171A20;
+      --muted:#666D79;
+      --subtle:#969DA8;
+      --line:#E0E4EA;
+      --line-strong:#CFD5DE;
+      --cobalt:#4664FF;
+      --cobalt-hover:#3855EF;
+      --signal:#C9FF57;
+      --danger:#E95360;
+      --warning:#E7A62E;
+      --success:#229B6D;
 
-      --callx-success: #38D996;
-      --callx-warning: #FFBD3E;
-      --callx-danger: #FF5D68;
+      --radius-control:10px;
+      --radius-button:12px;
+      --radius-card:16px;
+      --radius-media:20px;
 
-      --radius-control: 12px;
-      --radius-button: 16px;
-      --radius-card: 24px;
-      --radius-media: 32px;
+      --page-pad:clamp(16px,4vw,56px);
+      --max:1320px;
+      --ease:cubic-bezier(.16,1,.3,1);
+      --header-h:64px;
 
-      --page-pad: clamp(18px, 4vw, 64px);
-      --content-max: 1380px;
-      --ease-callx: cubic-bezier(0.16, 1, 0.3, 1);
+      --font-ko:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --font-en:"Manrope","Pretendard Variable",Pretendard,sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;background:var(--bg);-webkit-text-size-adjust:100%}
+    body{
+      min-width:0;
+      overflow-x:hidden;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-ko);
+      font-size:16px;
+      line-height:1.6;
+      letter-spacing:-.018em;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    html[lang="fr"] body{letter-spacing:-.01em}
+    html[lang="ko"] h1,
+    html[lang="ko"] h2,
+    html[lang="ko"] h3,
+    html[lang="ko"] p,
+    html[lang="ko"] button,
+    html[lang="ko"] a{word-break:keep-all}
+    html[lang="fr"] h1,
+    html[lang="fr"] h2,
+    html[lang="fr"] h3,
+    html[lang="fr"] p,
+    html[lang="fr"] button,
+    html[lang="fr"] a{word-break:normal;overflow-wrap:anywhere;hyphens:auto}
+
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    img,video{display:block;width:100%;max-width:100%}
+    button,a{-webkit-tap-highlight-color:transparent}
+    :focus-visible{outline:3px solid rgba(70,100,255,.28);outline-offset:3px}
+
+    .container{
+      width:min(100%,var(--max));
+      margin-inline:auto;
+      padding-inline:var(--page-pad);
+    }
+    .section{padding:clamp(76px,9vw,136px) 0}
+    .section-soft{background:#F0F3F7}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:9px;
+      color:var(--muted);
+      font:700 12px/1 var(--font-en);
+      letter-spacing:.08em;text-transform:uppercase;
+    }
+    .eyebrow::before{
+      content:"";width:7px;height:7px;border-radius:50%;
+      background:var(--signal);box-shadow:0 0 0 5px rgba(201,255,87,.13);
+    }
+    .section-head{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);
+      gap:30px;
+      align-items:end;
+      margin-bottom:30px;
+    }
+    .section-head h2,
+    .split-copy h2,
+    .survey-intro h2,
+    .trust-copy h2,
+    .faq-head h2{
+      margin-top:14px;
+      font-size:clamp(38px,5.3vw,72px);
+      line-height:1.02;
+      letter-spacing:-.05em;
+      font-weight:620;
+      text-wrap:balance;
+    }
+    html[lang="fr"] .section-head h2,
+    html[lang="fr"] .split-copy h2,
+    html[lang="fr"] .survey-intro h2,
+    html[lang="fr"] .trust-copy h2,
+    html[lang="fr"] .faq-head h2{
+      letter-spacing:-.035em;
+    }
+    .section-head>p{
+      justify-self:end;
+      max-width:430px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.65;
     }
 
-    html {
-      scroll-behavior: smooth;
-      background: var(--callx-ink);
+    .btn{
+      min-height:48px;
+      border:1px solid transparent;
+      border-radius:var(--radius-button);
+      padding:0 18px;
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:8px;
+      font-weight:650;
+      transition:background .2s var(--ease),border-color .2s var(--ease),transform .2s var(--ease),color .2s var(--ease);
     }
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--cobalt);color:#fff}
+    .btn-primary:hover{background:var(--cobalt-hover)}
+    .btn-secondary{background:#fff;color:var(--text);border-color:var(--line-strong)}
+    .btn-dark{background:var(--ink);color:#fff}
+    .btn[disabled]{cursor:not-allowed;opacity:.45}
 
-    body {
-      font-family:
-        "Manrope",
-        "Pretendard Variable",
-        Pretendard,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-      background: var(--callx-cloud);
-      color: var(--callx-text-primary);
-      overflow-x: clip;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+    /* Header */
+    .header{
+      position:sticky;top:0;z-index:50;
+      background:rgba(246,247,248,.9);
+      border-bottom:1px solid rgba(17,20,26,.08);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
     }
-
-    button, a, input {
-      font: inherit;
+    .nav{
+      min-height:var(--header-h);
+      display:flex;align-items:center;gap:18px;
     }
-
-    button, a {
-      -webkit-tap-highlight-color: transparent;
+    .brand{
+      color:var(--ink);
+      font:700 20px/1 var(--font-en);
+      letter-spacing:-.045em;
+      white-space:nowrap;
     }
-
-    img {
-      max-width: 100%;
-      display: block;
+    .brand .x{color:var(--cobalt)}
+    .nav-links{
+      display:flex;align-items:center;gap:22px;
+      margin-left:28px;
+      color:var(--muted);
+      font-size:13px;font-weight:650;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
+    .nav-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .lang-toggle{
+      display:inline-flex;align-items:center;
+      border:1px solid var(--line-strong);
+      border-radius:999px;
+      padding:3px;
+      background:#fff;
     }
-
-    .container {
-      width: min(100%, var(--content-max));
-      margin-inline: auto;
-      padding-inline: var(--page-pad);
+    .lang-toggle button{
+      min-width:38px;height:32px;border:0;border-radius:999px;
+      background:transparent;color:var(--subtle);
+      font:700 11px/1 var(--font-en);
     }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 12px;
-      line-height: 1;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+    .lang-toggle button[aria-pressed="true"]{
+      background:var(--ink);color:#fff;
     }
+    .nav .btn{min-height:40px;padding-inline:14px;font-size:13px}
 
-    .eyebrow::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--callx-signal);
-      box-shadow: 0 0 0 5px rgba(201, 255, 87, .08);
-    }
-
-    .hero {
-      position: relative;
-      min-height: 100svh;
+    /* Hero */
+    .hero{
+      position:relative;
+      padding:clamp(54px,6.5vw,92px) 0 clamp(48px,6vw,78px);
+      overflow:hidden;
       background:
-        radial-gradient(circle at 68% 28%, rgba(70,100,255,.18), transparent 28%),
-        radial-gradient(circle at 22% 80%, rgba(201,255,87,.06), transparent 20%),
-        var(--callx-ink);
-      color: #F7F8FA;
-      overflow: hidden;
-      isolation: isolate;
+        radial-gradient(circle at 78% 10%,rgba(70,100,255,.12),transparent 28%),
+        radial-gradient(circle at 14% 80%,rgba(201,255,87,.10),transparent 20%),
+        linear-gradient(180deg,#FAFBFC,#F4F6F9);
     }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.16fr) minmax(340px,.84fr);
+      gap:clamp(34px,6vw,86px);
+      align-items:center;
+    }
+    .hero-copy{max-width:820px;min-width:0}
+    .hero .eyebrow{margin-bottom:20px}
+    .hero h1{
+      max-width:940px;
+      color:var(--ink);
+      font-size:clamp(54px,7.2vw,106px);
+      line-height:.94;
+      letter-spacing:-.062em;
+      font-weight:650;
+      text-wrap:balance;
+    }
+    html[lang="fr"] .hero h1{
+      font-size:clamp(50px,6.3vw,92px);
+      line-height:.98;
+      letter-spacing:-.045em;
+    }
+    .hero h1 .soft{display:block;color:#78808C;font-weight:520}
+    .hero-sub{
+      max-width:700px;
+      margin-top:24px;
+      color:var(--muted);
+      font-size:clamp(17px,1.55vw,21px);
+      line-height:1.6;
+    }
+    .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:28px}
+    .hero-note{width:100%;color:var(--subtle);font-size:13px;font-weight:600}
 
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
+    .hero-side{min-width:0}
+    .video-shell{
+      position:relative;
+      min-height:520px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-media);
       background:
-        linear-gradient(to bottom, rgba(11,14,20,.12), rgba(11,14,20,.28)),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,.025) 0,
-          rgba(255,255,255,.025) 1px,
-          transparent 1px,
-          transparent calc(100vw / 12)
-        );
-      pointer-events: none;
-      z-index: -1;
+        radial-gradient(circle at 50% 14%,rgba(70,100,255,.18),transparent 28%),
+        linear-gradient(145deg,#E9EEF8,#DDE5F1);
     }
-
-    .nav-wrap {
-      position: fixed;
-      top: 14px;
-      left: 0;
-      right: 0;
-      z-index: 50;
-      padding-inline: 14px;
+    .video-shell video,.video-shell .video-fallback{
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     }
-
-    .nav {
-      max-width: 1120px;
-      margin: 0 auto;
-      min-height: 58px;
-      padding: 8px 9px 8px 16px;
-      border-radius: 999px;
-      background: rgba(15,18,25,.62);
-      border: 1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.16);
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      font-size: 20px;
-      letter-spacing: -.04em;
-      white-space: nowrap;
-    }
-
-    .brand-x {
-      color: #6E82FF;
-      position: relative;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .lang {
-      min-width: 72px;
-      color: rgba(247,248,250,.7);
-      background: transparent;
-      border: 0;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn {
-      min-height: 46px;
-      border: 0;
-      border-radius: var(--radius-button);
-      padding: 0 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      transition:
-        transform .22s var(--ease-callx),
-        background .22s var(--ease-callx),
-        color .22s var(--ease-callx),
-        border-color .22s var(--ease-callx);
-    }
-
-    .btn:active {
-      transform: translateY(1px) scale(.995);
-    }
-
-    .btn-primary {
-      background: var(--callx-cobalt);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--callx-cobalt-hover);
-    }
-
-    .btn-dark {
-      background: var(--callx-ink);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: inherit;
-      border: 1px solid rgba(17,20,26,.12);
-    }
-
-    .hero-inner {
-      min-height: 100svh;
-      display: flex;
-      align-items: flex-end;
-      padding-top: 120px;
-      padding-bottom: clamp(44px, 7vw, 86px);
-    }
-
-    .hero-grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
-      gap: clamp(40px, 6vw, 96px);
-      align-items: end;
-    }
-
-    .hero-copy {
-      max-width: 850px;
-    }
-
-    .hero .eyebrow {
-      color: rgba(247,248,250,.62);
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      font-size: clamp(54px, 8vw, 118px);
-      line-height: .94;
-      letter-spacing: -.055em;
-      font-weight: 600;
-      text-wrap: balance;
-    }
-
-    .hero h1 .accent {
-      color: #8EA0FF;
-    }
-
-    .hero-sub {
-      margin-top: 26px;
-      max-width: 610px;
-      color: rgba(247,248,250,.68);
-      font-size: clamp(16px, 1.5vw, 20px);
-      line-height: 1.6;
-      letter-spacing: -.02em;
-    }
-
-    .hero-cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 30px;
-    }
-
-    .hero-reassurance {
-      color: rgba(247,248,250,.46);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .call-stage {
-      position: relative;
-      min-height: 520px;
-      border-radius: 34px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.10);
+    .video-fallback{
+      display:grid;place-items:center;
       background:
-        radial-gradient(circle at 50% 18%, rgba(70,100,255,.36), transparent 26%),
-        linear-gradient(180deg, #161A24 0%, #0E1118 100%);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.08),
-        0 30px 80px rgba(0,0,0,.28);
-    }
-
-    .call-stage::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, transparent 0%, rgba(0,0,0,.10) 48%, rgba(0,0,0,.36) 100%);
-      pointer-events: none;
-    }
-
-    .call-stage-top {
-      position: absolute;
-      top: 22px;
-      left: 22px;
-      right: 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 2;
-      font-size: 12px;
-      color: rgba(255,255,255,.54);
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      font-size: 12px;
-      font-weight: 700;
-      color: rgba(255,255,255,.82);
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--callx-signal);
-      animation: callxPulse 2.2s ease-in-out infinite;
-    }
-
-    @keyframes callxPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .38; }
-    }
-
-    .caller {
-      position: absolute;
-      top: 118px;
-      left: 28px;
-      right: 28px;
-      text-align: center;
-      z-index: 2;
-    }
-
-    .avatar {
-      width: 92px;
-      height: 92px;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.06));
-      border: 1px solid rgba(255,255,255,.14);
-      display: grid;
-      place-items: center;
-      font-size: 30px;
-      font-weight: 700;
-      color: white;
-    }
-
-    .caller-name {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -.035em;
-    }
-
-    .caller-meta {
-      margin-top: 7px;
-      color: rgba(255,255,255,.46);
-      font-size: 13px;
-    }
-
-    .call-transcript {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      z-index: 3;
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.11);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .call-transcript small {
-      display: block;
-      color: rgba(255,255,255,.42);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .call-transcript p {
-      color: rgba(255,255,255,.9);
-      font-size: 15px;
-      line-height: 1.55;
-      letter-spacing: -.015em;
-    }
-
-    .light-section {
-      background: var(--callx-cloud);
-      position: relative;
-      z-index: 3;
-      margin-top: -28px;
-      border-radius: 28px 28px 0 0;
-    }
-
-    .promise {
-      padding: clamp(92px, 11vw, 180px) 0;
-    }
-
-    .promise-grid {
-      display: grid;
-      grid-template-columns: .55fr 1.45fr;
-      gap: clamp(40px, 8vw, 120px);
-      align-items: start;
-    }
-
-    .promise .eyebrow {
-      color: var(--callx-text-secondary);
-      position: sticky;
-      top: 110px;
-    }
-
-    .manifesto {
-      font-size: clamp(38px, 5vw, 76px);
-      line-height: 1.02;
-      letter-spacing: -.045em;
-      font-weight: 600;
-      max-width: 960px;
-      text-wrap: balance;
-    }
-
-    .manifesto .soft {
-      color: #8A8F98;
-      font-weight: 500;
-    }
-
-    .promise-body {
-      margin-top: 34px;
-      max-width: 720px;
-      font-size: clamp(18px, 2vw, 26px);
-      color: var(--callx-text-secondary);
-      line-height: 1.55;
-      letter-spacing: -.025em;
-    }
-
-    .network-line {
-      margin-top: 44px;
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      background: var(--callx-ice);
-      color: #2F46C7;
-      padding: 14px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .network-line::before {
-      content: "";
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--callx-cobalt);
-    }
-
-    .mosaic-section {
-      padding: 26px 0 clamp(90px, 10vw, 160px);
-      background: var(--callx-cloud);
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 30px;
-      margin-bottom: 28px;
-    }
-
-    .section-head h2 {
-      font-size: clamp(42px, 6vw, 82px);
-      line-height: .98;
-      letter-spacing: -.045em;
-      font-weight: 600;
-      max-width: 790px;
-    }
-
-    .section-head p {
-      max-width: 390px;
-      color: var(--callx-text-secondary);
-      line-height: 1.55;
-      font-size: 15px;
-    }
-
-    .mosaic {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      grid-template-rows: 280px 230px;
-      gap: 8px;
-      min-height: 518px;
-    }
-
-    .mosaic-card {
-      border-radius: 24px;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid rgba(11,14,20,.07);
-      background: white;
-    }
-
-    .mosaic-main {
-      grid-row: 1 / 3;
-      background:
-        radial-gradient(circle at 52% 18%, rgba(70,100,255,.18), transparent 22%),
-        linear-gradient(160deg, #111722 0%, #0C1016 55%, #161D2D 100%);
-      color: white;
-      padding: 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .mock-phone {
-      width: min(66%, 340px);
-      aspect-ratio: 9 / 18.5;
-      margin: 16px auto 0;
-      border-radius: 36px;
-      border: 1px solid rgba(255,255,255,.12);
-      background:
-        radial-gradient(circle at 50% 13%, rgba(70,100,255,.28), transparent 22%),
-        #0D1017;
-      box-shadow: 0 28px 70px rgba(0,0,0,.36);
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .mock-phone::before {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      width: 82px;
-      height: 20px;
-      transform: translateX(-50%);
-      border-radius: 999px;
-      background: #05070B;
-    }
-
-    .phone-inner {
-      margin-top: 36px;
-    }
-
-    .phone-title {
-      font-size: 12px;
-      color: rgba(255,255,255,.46);
-      margin-bottom: 14px;
-    }
-
-    .phone-summary {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.09);
-    }
-
-    .phone-summary strong {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-    }
-
-    .phone-summary p {
-      color: rgba(255,255,255,.64);
-      line-height: 1.5;
-      font-size: 12px;
-    }
-
-    .mosaic-title {
-      position: relative;
-      z-index: 2;
-      font-size: clamp(26px, 3vw, 42px);
-      font-weight: 600;
-      letter-spacing: -.035em;
-      max-width: 420px;
-      line-height: 1.06;
-    }
-
-    .mosaic-small {
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .mosaic-small h3 {
-      font-size: clamp(22px, 2.5vw, 34px);
-      line-height: 1.08;
-      letter-spacing: -.035em;
-      max-width: 420px;
-    }
-
-    .mosaic-small p {
-      color: var(--callx-text-secondary);
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .mosaic-state {
-      background: var(--callx-ice);
-    }
-
-    .mosaic-result {
-      background: #ECEFD8;
-    }
-
-    .state-line {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--callx-text-secondary);
-    }
-
-    .state-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,.68);
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--callx-text-primary);
-    }
-
-    .usecases {
-      background:
-        radial-gradient(circle at 10% 18%, rgba(70,100,255,.18), transparent 22%),
-        radial-gradient(circle at 78% 82%, rgba(201,255,87,.05), transparent 20%),
-        var(--callx-ink);
-      color: white;
-      padding: clamp(88px, 10vw, 160px) 0;
-    }
-
-    .usecase-grid {
-      display: grid;
-      grid-template-columns: minmax(280px, .62fr) minmax(0, 1.38fr);
-      gap: clamp(46px, 8vw, 120px);
-      align-items: start;
-    }
-
-    .usecase-sticky {
-      position: sticky;
-      top: 120px;
-      align-self: start;
-    }
-
-    .usecase-sticky .eyebrow {
-      color: rgba(255,255,255,.52);
-      margin-bottom: 24px;
-    }
-
-    .usecase-sticky h2 {
-      font-size: clamp(40px, 5vw, 68px);
-      line-height: 1.02;
-      letter-spacing: -.045em;
-      font-weight: 600;
-      max-width: 520px;
-    }
-
-    .usecase-sticky p {
-      margin-top: 24px;
-      color: rgba(255,255,255,.56);
-      line-height: 1.6;
-      max-width: 420px;
-    }
-
-    .usecase-nav {
-      margin-top: 44px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .usecase-nav button {
-      width: 100%;
-      text-align: left;
-      border: 0;
-      color: rgba(255,255,255,.38);
-      background: rgba(255,255,255,.04);
-      padding: 14px 16px;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all .25s var(--ease-callx);
-      font-weight: 700;
-    }
-
-    .usecase-nav button.active {
-      color: white;
-      background: rgba(70,100,255,.22);
-      box-shadow: inset 0 0 0 1px rgba(110,130,255,.18);
-    }
-
-    .usecase-cards {
-      display: grid;
-      gap: 30px;
-    }
-
-    .usecase-card {
-      min-height: 72vh;
-      padding: 26px;
-      border-radius: 30px;
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(255,255,255,.09);
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 28px;
-      overflow: hidden;
-    }
-
-    .usecase-kicker {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: center;
-      color: rgba(255,255,255,.46);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .usecase-card h3 {
-      margin-top: 14px;
-      font-size: clamp(34px, 4vw, 60px);
-      line-height: 1.02;
-      letter-spacing: -.045em;
-      font-weight: 600;
-      max-width: 700px;
-    }
-
-    .scenario-visual {
-      border-radius: 24px;
-      overflow: hidden;
-      min-height: 320px;
-      position: relative;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(70,100,255,.25), transparent 30%),
-        linear-gradient(145deg, #171C27, #0F131B);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .scenario-content {
-      position: absolute;
-      left: 22px;
-      right: 22px;
-      bottom: 22px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .scenario-chip {
-      width: fit-content;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.72);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .scenario-result {
-      max-width: 580px;
-      padding: 18px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.08);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,.09);
-    }
-
-    .scenario-result strong {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 15px;
-    }
-
-    .scenario-result p {
-      color: rgba(255,255,255,.58);
-      line-height: 1.55;
-      font-size: 14px;
-    }
-
-    .usecase-bottom {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .mini-step {
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.07);
-    }
-
-    .mini-step small {
-      color: rgba(255,255,255,.32);
-      font-size: 11px;
-    }
-
-    .mini-step p {
-      margin-top: 7px;
-      font-size: 13px;
-      color: rgba(255,255,255,.72);
-      line-height: 1.45;
-    }
-
-    .survey {
-      background: var(--callx-cloud);
-      padding: clamp(90px, 10vw, 150px) 0;
-    }
-
-    .survey-shell {
-      max-width: 860px;
-      margin: 0 auto;
-    }
-
-    .survey-top {
-      text-align: center;
-      margin-bottom: 42px;
-    }
-
-    .survey-top .eyebrow {
-      color: var(--callx-text-secondary);
-      margin-bottom: 18px;
-    }
-
-    .survey-top h2 {
-      font-size: clamp(38px, 5vw, 68px);
-      line-height: 1.02;
-      letter-spacing: -.045em;
-      font-weight: 600;
-    }
-
-    .survey-top p {
-      margin: 18px auto 0;
-      max-width: 560px;
-      color: var(--callx-text-secondary);
-      line-height: 1.6;
-    }
-
-    .survey-card {
-      background: white;
-      border: 1px solid rgba(11,14,20,.07);
-      border-radius: 28px;
-      padding: clamp(22px, 4vw, 42px);
-      box-shadow: 0 20px 70px rgba(11,14,20,.05);
-    }
-
-    .survey-progress {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      color: var(--callx-text-tertiary);
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 28px;
-    }
-
-    .progress-track {
-      flex: 1;
-      height: 6px;
-      background: #EEF0F4;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      width: 33.333%;
-      height: 100%;
-      background: var(--callx-cobalt);
-      border-radius: inherit;
-      transition: width .35s var(--ease-callx);
-    }
-
-    .question {
-      display: none;
-    }
-
-    .question.active {
-      display: block;
-      animation: questionIn .38s var(--ease-callx) both;
-    }
-
-    @keyframes questionIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .question h3 {
-      font-size: clamp(28px, 4vw, 44px);
-      letter-spacing: -.035em;
-      line-height: 1.15;
-      font-weight: 600;
-      margin-bottom: 24px;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .option {
-      min-height: 62px;
-      border-radius: 16px;
-      border: 1px solid rgba(11,14,20,.10);
-      background: #FAFAF8;
-      color: var(--callx-text-primary);
-      padding: 15px 16px;
-      text-align: left;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all .22s var(--ease-callx);
-    }
-
-    .option:hover {
-      border-color: rgba(70,100,255,.38);
-      background: #F6F8FF;
-    }
-
-    .option.selected {
-      background: var(--callx-ice);
-      border-color: var(--callx-cobalt);
-      box-shadow: inset 0 0 0 1px var(--callx-cobalt);
-    }
-
-    .survey-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 26px;
-    }
-
-    .final-cta {
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 70% 30%, rgba(70,100,255,.30), transparent 30%),
-        radial-gradient(circle at 18% 70%, rgba(201,255,87,.07), transparent 22%),
-        var(--callx-ink);
-      color: white;
-      padding: clamp(100px, 12vw, 180px) 0;
-    }
-
-    .final-cta-inner {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) .75fr;
-      gap: 40px;
-      align-items: end;
-    }
-
-    .final-cta .eyebrow {
-      color: rgba(255,255,255,.5);
-      margin-bottom: 24px;
-    }
-
-    .final-cta h2 {
-      font-size: clamp(48px, 7vw, 96px);
-      line-height: .95;
-      letter-spacing: -.055em;
-      font-weight: 600;
-      max-width: 920px;
-    }
-
-    .final-cta p {
-      color: rgba(255,255,255,.56);
-      line-height: 1.6;
-      max-width: 470px;
-      margin-bottom: 24px;
-    }
-
-    .final-side {
-      display: grid;
-      justify-items: start;
-    }
-
-    .footer {
-      background: var(--callx-ink);
-      color: rgba(255,255,255,.34);
-      border-top: 1px solid rgba(255,255,255,.07);
-      padding: 22px 0 34px;
-      font-size: 12px;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .mobile-sticky {
-      display: none;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition:
-        opacity .72s var(--ease-callx),
-        transform .72s var(--ease-callx);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 1023px) {
-      .hero-grid,
-      .promise-grid,
-      .usecase-grid,
-      .final-cta-inner {
-        grid-template-columns: 1fr;
+        radial-gradient(circle at 50% 22%,rgba(70,100,255,.18),transparent 26%),
+        linear-gradient(145deg,#ECF1F8,#DDE5F0);
+      color:var(--subtle);
+      font-size:13px;font-weight:650;
+    }
+    .video-veil{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(255,255,255,.02) 40%,rgba(16,20,30,.48) 100%);
+      pointer-events:none;
+    }
+    .risk-toast{
+      position:absolute;left:16px;right:16px;bottom:16px;z-index:2;
+      display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+      padding:15px;
+      border-radius:14px;
+      background:rgba(255,255,255,.90);
+      border:1px solid rgba(17,20,26,.09);
+      backdrop-filter:blur(16px);
+      box-shadow:0 14px 36px rgba(40,52,80,.12);
+    }
+    .risk-icon{
+      width:40px;height:40px;border-radius:12px;
+      display:grid;place-items:center;
+      background:#FFF0F1;color:var(--danger);font-weight:800;
+    }
+    .risk-toast strong{display:block;font-size:14px;line-height:1.35}
+    .risk-toast p{margin-top:3px;color:var(--muted);font-size:12px;line-height:1.4}
+    .risk-state{
+      display:inline-flex;align-items:center;gap:7px;
+      color:#364154;font-size:11px;font-weight:700;white-space:nowrap;
+    }
+    .risk-state i{
+      width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 4px rgba(201,255,87,.18)
+    }
+    .hero-zeros{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      border-top:1px solid var(--line-strong);
+      margin-top:28px;
+    }
+    .hero-zeros>div{padding:16px 14px 0 0}
+    .hero-zeros>div+div{padding-left:14px;border-left:1px solid var(--line)}
+    .hero-zeros b{
+      display:block;color:var(--ink);
+      font:650 clamp(28px,3vw,40px)/1 var(--font-en);
+    }
+    .hero-zeros span{display:block;margin-top:5px;color:var(--muted);font-size:12px}
+
+    /* Problem */
+    .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .problem-card{
+      min-height:430px;
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:24px;
+      border:1px solid var(--line);
+      border-radius:var(--radius-card);
+      background:#fff;
+      overflow:hidden;
+      position:relative;
+    }
+    .problem-card:nth-child(1){
+      background:linear-gradient(160deg,#FFFFFF,#EEF2FF);
+    }
+    .problem-card:nth-child(2){
+      background:linear-gradient(160deg,#FFFFFF,#F2F5E5);
+    }
+    .problem-kicker{display:flex;justify-content:space-between;gap:16px;color:var(--subtle);font-size:12px;font-weight:700}
+    .problem-visual{
+      margin:34px 0 28px;
+      min-height:210px;
+      border-radius:14px;
+      border:1px solid rgba(17,20,26,.06);
+      background:rgba(255,255,255,.68);
+      display:grid;place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .phone-ring{
+      width:112px;height:112px;border-radius:50%;
+      display:grid;place-items:center;
+      background:#fff;border:1px solid var(--line);
+      box-shadow:0 0 0 18px rgba(70,100,255,.05),0 0 0 38px rgba(70,100,255,.03);
+      font:700 30px/1 var(--font-en);color:var(--cobalt);
+    }
+    .phone-ring.senior{color:var(--warning);box-shadow:0 0 0 18px rgba(231,166,46,.06),0 0 0 38px rgba(231,166,46,.03)}
+    .problem-card h3{font-size:clamp(28px,3vw,40px);line-height:1.08;letter-spacing:-.04em;font-weight:600;max-width:620px}
+    .problem-card p{margin-top:12px;color:var(--muted);max-width:560px}
+
+    /* How */
+    .how-panel{
+      padding:clamp(20px,3vw,34px);
+      border:1px solid var(--line);
+      border-radius:var(--radius-card);
+      background:linear-gradient(135deg,#E3E9FF,#F7F8FA 52%,#EFF4DD);
+    }
+    .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .how-step{
+      min-height:230px;
+      padding:20px;
+      border:1px solid rgba(17,20,26,.07);
+      border-radius:14px;
+      background:rgba(255,255,255,.88);
+      display:flex;flex-direction:column;
+    }
+    .how-num{color:var(--subtle);font:700 11px/1 var(--font-en);letter-spacing:.06em}
+    .how-icon{
+      width:44px;height:44px;margin-top:34px;
+      border-radius:12px;display:grid;place-items:center;
+      background:var(--surface-blue);color:var(--cobalt);
+      font-weight:800;
+    }
+    .how-step:nth-child(3) .how-icon{background:#FFF0F1;color:var(--danger)}
+    .how-step:nth-child(4) .how-icon{background:var(--surface-green);color:#677B2C}
+    .how-step h3{margin-top:auto;font-size:20px;line-height:1.25;letter-spacing:-.03em}
+    .how-step p{margin-top:7px;color:var(--muted);font-size:13px;line-height:1.5}
+
+    /* Survey */
+    .survey{
+      background:#EDF1F6;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+    .survey-shell{
+      display:grid;
+      grid-template-columns:minmax(260px,.64fr) minmax(0,1.36fr);
+      gap:clamp(34px,6vw,78px);
+      align-items:start;
+    }
+    .survey-intro{position:sticky;top:calc(var(--header-h) + 28px)}
+    .survey-intro h2{font-size:clamp(40px,4.8vw,64px)}
+    .survey-intro p{margin-top:18px;color:var(--muted);max-width:430px}
+    .survey-meta{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;
+    }
+    .meta-chip{
+      padding:8px 10px;border:1px solid var(--line-strong);border-radius:999px;
+      background:rgba(255,255,255,.64);color:var(--muted);font-size:11px;font-weight:700;
+    }
+    .survey-card{
+      min-width:0;
+      padding:clamp(20px,3vw,34px);
+      border:1px solid var(--line-strong);
+      border-radius:var(--radius-card);
+      background:#fff;
+    }
+    .survey-progress{display:flex;align-items:center;gap:16px;margin-bottom:28px;color:var(--subtle);font:700 12px/1 var(--font-en)}
+    .progress-track{flex:1;height:5px;border-radius:999px;background:#EDF0F4;overflow:hidden}
+    .progress-bar{height:100%;width:25%;background:var(--cobalt);border-radius:inherit;transition:width .3s var(--ease)}
+    .survey-question{display:none}
+    .survey-question.active{display:block;animation:qIn .32s var(--ease) both}
+    @keyframes qIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .survey-question h3{font-size:clamp(27px,3.4vw,42px);line-height:1.14;letter-spacing:-.04em;font-weight:600}
+    .survey-help{margin-top:10px;color:var(--muted);font-size:14px}
+    .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:24px}
+    .option{
+      min-height:62px;
+      border:1px solid var(--line-strong);
+      border-radius:var(--radius-control);
+      background:#FAFBFC;
+      color:var(--text);
+      padding:14px 15px;
+      text-align:left;
+      font-weight:620;
+      transition:.2s var(--ease);
+    }
+    .option:hover{border-color:rgba(70,100,255,.40);background:#F6F8FF}
+    .option.selected{border-color:var(--cobalt);background:var(--surface-blue);box-shadow:inset 0 0 0 1px var(--cobalt)}
+    .subquestion{
+      display:none;
+      margin-top:24px;padding-top:22px;border-top:1px solid var(--line);
+    }
+    .subquestion.show{display:block}
+    .subquestion h4{font-size:16px;line-height:1.4}
+    .survey-actions{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+    .survey-msg{min-height:22px;margin-top:12px;color:var(--danger);font-size:13px}
+    .survey-success{display:none}
+    .survey-success.show{display:block}
+    .survey-success h3{font-size:clamp(30px,4vw,44px);line-height:1.1;letter-spacing:-.04em}
+    .survey-success p{margin-top:14px;color:var(--muted)}
+    .survey-summary{
+      margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:12px;background:#F7F8FA;
+      display:grid;gap:9px;
+    }
+    .summary-row{display:grid;grid-template-columns:110px 1fr;gap:12px;font-size:13px}
+    .summary-row span:first-child{color:var(--subtle)}
+    .hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+    /* Use cases */
+    .usecase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .usecase-card{
+      min-height:440px;
+      border:1px solid var(--line);
+      border-radius:var(--radius-card);
+      background:#fff;
+      padding:22px;
+      display:flex;flex-direction:column;
+    }
+    .usecase-card:nth-child(2){background:#F8F9FC}
+    .usecase-card:nth-child(3){background:#F4F6EA}
+    .usecase-top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--subtle);font:700 11px/1 var(--font-en)}
+    .status-pill{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;
+      color:var(--muted);font-size:11px;font-weight:700;
+    }
+    .status-pill i{width:7px;height:7px;border-radius:50%;background:var(--signal)}
+    .usecase-visual{
+      flex:1;
+      min-height:180px;
+      display:flex;align-items:center;justify-content:center;
+      margin:28px 0;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+    .case-flow{
+      width:100%;
+      display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;
+      color:var(--muted);font-size:12px;text-align:center;
+    }
+    .case-node{padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.75)}
+    .case-arrow{color:var(--cobalt);font:700 18px/1 var(--font-en)}
+    .usecase-card h3{font-size:clamp(26px,2.6vw,36px);line-height:1.08;letter-spacing:-.04em;font-weight:600}
+    .usecase-card>p{margin-top:12px;color:var(--muted);font-size:14px}
+
+    /* Trust */
+    .trust-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(34px,6vw,84px);align-items:start}
+    .trust-copy p{margin-top:20px;color:var(--muted);max-width:560px}
+    .trust-list{border-top:1px solid var(--line-strong)}
+    .trust-item{
+      display:grid;grid-template-columns:52px 1fr;gap:18px;
+      padding:22px 0;border-bottom:1px solid var(--line-strong);
+    }
+    .trust-index{font:700 12px/1 var(--font-en);color:var(--subtle);padding-top:6px}
+    .trust-item h3{font-size:22px;line-height:1.25;letter-spacing:-.03em}
+    .trust-item p{margin-top:7px;color:var(--muted);font-size:14px}
+
+    /* FAQ */
+    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .faq-item{border:1px solid var(--line);border-radius:14px;background:#fff;padding:0 16px}
+    .faq-question{
+      width:100%;min-height:64px;border:0;background:transparent;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      text-align:left;font-weight:650;color:var(--text);
+    }
+    .faq-question b{color:var(--subtle);font-size:22px;font-weight:500;transition:transform .2s var(--ease)}
+    .faq-item.open .faq-question b{transform:rotate(45deg)}
+    .faq-answer{display:none;padding:0 0 17px;color:var(--muted);font-size:14px;line-height:1.65}
+    .faq-item.open .faq-answer{display:block}
+
+    /* Final */
+    .final-cta{padding:46px 0 clamp(92px,9vw,130px)}
+    .final-box{
+      display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:34px;align-items:end;
+      padding:clamp(28px,5vw,56px);
+      border:1px solid var(--line);
+      border-radius:var(--radius-media);
+      background:linear-gradient(135deg,#E4EAFF,#F7F8FA 54%,#EFF4DA);
+    }
+    .final-box h2{font-size:clamp(44px,6vw,82px);line-height:.98;letter-spacing:-.055em;font-weight:620;text-wrap:balance}
+    .final-side p{color:var(--muted);max-width:470px;margin-bottom:22px}
+    .footer{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--subtle);font-size:12px}
+    .footer-inner{display:flex;justify-content:space-between;gap:18px;align-items:center}
+
+    .mobile-sticky{display:none}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+    .reveal.visible{opacity:1;transform:none}
+
+    @media(max-width:1000px){
+      .nav-links{display:none}
+      .hero-grid,.survey-shell,.trust-grid,.final-box{grid-template-columns:1fr}
+      .hero h1{max-width:900px}
+      .hero-side{max-width:760px}
+      .survey-intro{position:static}
+      .how-grid{grid-template-columns:1fr 1fr}
+      .usecase-grid{grid-template-columns:1fr}
+      .usecase-card{min-height:auto}
+    }
+
+    @media(max-width:767px){
+      :root{--page-pad:clamp(16px,5vw,22px);--header-h:56px}
+      .section{padding:70px 0 84px}
+      .nav{min-height:56px}
+      .brand{font-size:18px}
+      .nav .btn{display:none}
+      .lang-toggle button{min-width:36px;height:30px}
+      .hero{padding:44px 0 48px}
+      .hero-grid{display:flex;flex-direction:column;gap:28px}
+      .hero h1{font-size:clamp(42px,12vw,58px);line-height:.99;letter-spacing:-.052em}
+      html[lang="fr"] .hero h1{font-size:clamp(39px,10.6vw,51px);line-height:1.03}
+      .hero-sub{font-size:16px}
+      .hero-actions{margin-top:24px}
+      .hero-actions .btn-secondary{display:none}
+      .video-shell{min-height:400px}
+      .risk-toast{left:12px;right:12px;bottom:12px;grid-template-columns:auto 1fr}
+      .risk-state{grid-column:2}
+      .hero-zeros span{font-size:11px;line-height:1.4}
+      .section-head{grid-template-columns:1fr;gap:16px}
+      .section-head h2,.split-copy h2,.survey-intro h2,.trust-copy h2,.faq-head h2{font-size:clamp(35px,10vw,48px)}
+      .section-head>p{justify-self:start}
+      .problem-grid{grid-template-columns:1fr}
+      .problem-card{min-height:390px;padding:18px}
+      .how-panel{padding:10px}
+      .how-grid{grid-template-columns:1fr}
+      .how-step{min-height:190px}
+      .survey-card{padding:20px 16px}
+      .survey-question h3{font-size:clamp(27px,8vw,36px)}
+      .option-grid{grid-template-columns:1fr}
+      .summary-row{grid-template-columns:90px 1fr}
+      .usecase-card{padding:18px}
+      .faq-grid{grid-template-columns:1fr}
+      .final-box{padding:22px}
+      .final-box h2{font-size:clamp(38px,11vw,52px)}
+      .footer{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+      .footer-inner{display:grid}
+      .mobile-sticky{
+        position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:45;
+        display:flex;align-items:center;justify-content:space-between;gap:10px;
+        padding:6px 6px 6px 13px;border:1px solid rgba(17,20,26,.09);border-radius:14px;
+        background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
+        box-shadow:0 14px 38px rgba(42,53,80,.14);
+        transform:translateY(140%);transition:transform .3s var(--ease);
       }
-
-      .hero-inner {
-        align-items: stretch;
-      }
-
-      .hero-grid {
-        align-content: end;
-      }
-
-      .call-stage {
-        min-height: 440px;
-      }
-
-      .promise .eyebrow,
-      .usecase-sticky {
-        position: static;
-      }
-
-      .usecase-nav {
-        display: none;
-      }
-
-      .usecase-card {
-        min-height: auto;
-      }
-
-      .final-side {
-        margin-top: 20px;
-      }
+      .mobile-sticky.show{transform:none}
+      .mobile-sticky small{color:var(--muted);font-size:11px;font-weight:650;line-height:1.35;max-width:150px}
+      .mobile-sticky .btn{min-height:42px;padding-inline:14px;font-size:12px}
     }
 
-    @media (max-width: 767px) {
-      .nav {
-        min-height: 54px;
-        padding-left: 14px;
-      }
-
-      .brand {
-        font-size: 18px;
-      }
-
-      .lang {
-        min-width: auto;
-        padding: 0 3px;
-      }
-
-      .nav .btn {
-        min-height: 38px;
-        padding-inline: 13px;
-        border-radius: 13px;
-        font-size: 12px;
-      }
-
-      .hero-inner {
-        padding-top: 96px;
-        padding-bottom: 28px;
-      }
-
-      .hero-grid {
-        gap: 28px;
-      }
-
-      .hero h1 {
-        font-size: clamp(46px, 13.7vw, 68px);
-        line-height: .96;
-      }
-
-      .hero-sub {
-        margin-top: 20px;
-      }
-
-      .hero-cta-row .btn-secondary {
-        display: none;
-      }
-
-      .hero-reassurance {
-        width: 100%;
-      }
-
-      .call-stage {
-        min-height: 390px;
-        border-radius: 26px;
-      }
-
-      .caller {
-        top: 92px;
-      }
-
-      .avatar {
-        width: 76px;
-        height: 76px;
-      }
-
-      .caller-name {
-        font-size: 24px;
-      }
-
-      .light-section {
-        border-radius: 24px 24px 0 0;
-        margin-top: -22px;
-      }
-
-      .promise {
-        padding-top: 78px;
-      }
-
-      .promise-grid {
-        gap: 28px;
-      }
-
-      .manifesto {
-        font-size: clamp(38px, 11.2vw, 56px);
-      }
-
-      .promise-body {
-        font-size: 18px;
-      }
-
-      .network-line {
-        margin-top: 30px;
-        align-items: flex-start;
-      }
-
-      .section-head {
-        display: block;
-      }
-
-      .section-head p {
-        margin-top: 18px;
-      }
-
-      .mosaic {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        min-height: 0;
-        gap: 8px;
-      }
-
-      .mosaic-main {
-        grid-row: auto;
-        min-height: 610px;
-      }
-
-      .mock-phone {
-        width: min(78%, 310px);
-      }
-
-      .mosaic-small {
-        min-height: 220px;
-      }
-
-      .usecases {
-        padding-top: 86px;
-      }
-
-      .usecase-grid {
-        gap: 42px;
-      }
-
-      .usecase-sticky h2 {
-        font-size: 42px;
-      }
-
-      .usecase-card {
-        padding: 18px;
-        border-radius: 24px;
-        gap: 22px;
-      }
-
-      .scenario-visual {
-        min-height: 370px;
-      }
-
-      .usecase-bottom {
-        grid-template-columns: 1fr;
-      }
-
-      .options {
-        grid-template-columns: 1fr;
-      }
-
-      .survey-actions {
-        flex-direction: row;
-      }
-
-      .final-cta h2 {
-        font-size: clamp(48px, 14vw, 68px);
-      }
-
-      .footer-inner {
-        display: grid;
-      }
-
-      .mobile-sticky {
-        display: flex;
-        position: fixed;
-        left: 12px;
-        right: 12px;
-        bottom: calc(10px + env(safe-area-inset-bottom));
-        z-index: 45;
-        padding: 6px 6px 6px 14px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        border-radius: 18px;
-        background: rgba(11,14,20,.84);
-        border: 1px solid rgba(255,255,255,.10);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        color: white;
-        transform: translateY(140%);
-        transition: transform .32s var(--ease-callx);
-      }
-
-      .mobile-sticky.show {
-        transform: translateY(0);
-      }
-
-      .mobile-sticky small {
-        color: rgba(255,255,255,.58);
-        font-weight: 700;
-      }
-
-      .mobile-sticky .btn {
-        min-height: 42px;
-        padding-inline: 15px;
-        font-size: 12px;
-      }
+    @media(max-width:380px){
+      .hero h1{font-size:40px}
+      html[lang="fr"] .hero h1{font-size:37px}
+      .video-shell{min-height:360px}
+      .hero-zeros>div{padding-right:8px}
+      .hero-zeros>div+div{padding-left:8px}
+      .hero-zeros b{font-size:28px}
     }
 
-    @media (max-width: 360px) {
-      :root {
-        --page-pad: 14px;
-      }
-
-      .hero h1 {
-        font-size: 45px;
-      }
-
-      .call-stage {
-        min-height: 360px;
-      }
-
-      .caller {
-        top: 82px;
-      }
-
-      .call-stage-top {
-        left: 14px;
-        right: 14px;
-      }
-
-      .status {
-        padding-inline: 9px;
-      }
-
-      .mosaic-main {
-        min-height: 560px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
-      }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-      }
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      .reveal{opacity:1;transform:none}
     }
   </style>
-<style id="callx-light-responsive-overrides">
-    /* =========================================================
-       CallX Light / Responsive refinement
-       ========================================================= */
 
-    :root {
-      --callx-cloud: #F7F8FB;
-      --callx-soft: #EEF2F8;
-      --callx-soft-blue: #EDF1FF;
-      --callx-panel: #FFFFFF;
-      --callx-line: rgba(17, 20, 26, .08);
-      --callx-line-strong: rgba(17, 20, 26, .13);
-      --callx-text-primary: #12151B;
-      --callx-text-secondary: #626875;
-      --callx-text-tertiary: #969CA8;
-      --page-pad: clamp(16px, 4vw, 56px);
-      --content-max: 1320px;
-    }
-
-    html,
-    body {
-      background: var(--callx-cloud);
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    /* Korean line-breaking: preserve words, but never let headlines escape */
-    h1, h2, h3, h4, p, button, a, span {
-      overflow-wrap: break-word;
-    }
-
-    h1, h2, h3 {
-      word-break: keep-all;
-      text-wrap: balance;
-    }
-
-    p {
-      word-break: keep-all;
-    }
-
-    /* ---------- Navigation ---------- */
-
-    .nav-wrap {
-      top: max(10px, env(safe-area-inset-top));
-      padding-inline: clamp(10px, 2.5vw, 18px);
-    }
-
-    .nav {
-      color: var(--callx-text-primary);
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(17,20,26,.08);
-      box-shadow: 0 12px 40px rgba(37,47,70,.08);
-    }
-
-    .brand {
-      color: var(--callx-text-primary);
-    }
-
-    .brand-x {
-      color: var(--callx-cobalt);
-    }
-
-    .lang {
-      color: var(--callx-text-secondary);
-    }
-
-    /* ---------- Hero ---------- */
-
-    .hero {
-      min-height: 100svh;
-      background:
-        radial-gradient(circle at 78% 16%, rgba(70,100,255,.16), transparent 28%),
-        radial-gradient(circle at 16% 78%, rgba(201,255,87,.13), transparent 21%),
-        linear-gradient(180deg, #F9FAFD 0%, #F2F5FA 100%);
-      color: var(--callx-text-primary);
-    }
-
-    .hero::before {
-      background:
-        linear-gradient(to bottom, rgba(255,255,255,.08), rgba(239,243,250,.22)),
-        repeating-linear-gradient(
-          90deg,
-          rgba(17,20,26,.025) 0,
-          rgba(17,20,26,.025) 1px,
-          transparent 1px,
-          transparent calc(100vw / 12)
-        );
-    }
-
-    .hero-inner {
-      min-height: 100svh;
-      padding-top: clamp(96px, 11vh, 132px);
-      padding-bottom: clamp(34px, 6vw, 76px);
-      align-items: center;
-    }
-
-    .hero-grid {
-      grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
-      gap: clamp(32px, 5vw, 76px);
-      align-items: center;
-    }
-
-    .hero-copy {
-      min-width: 0;
-      max-width: 780px;
-    }
-
-    .hero .eyebrow {
-      color: var(--callx-text-secondary);
-      margin-bottom: clamp(16px, 2vw, 24px);
-    }
-
-    .hero h1 {
-      width: 100%;
-      max-width: 830px;
-      font-size: clamp(48px, 6.7vw, 100px);
-      line-height: .98;
-      letter-spacing: -.055em;
-      color: var(--callx-text-primary);
-    }
-
-    .hero h1 .accent {
-      color: var(--callx-cobalt);
-    }
-
-    .hero-sub {
-      max-width: 620px;
-      margin-top: clamp(18px, 2.4vw, 28px);
-      color: var(--callx-text-secondary);
-      font-size: clamp(16px, 1.35vw, 19px);
-      line-height: 1.62;
-    }
-
-    .hero-reassurance {
-      color: var(--callx-text-tertiary);
-    }
-
-    .hero-cta-row .btn-secondary {
-      color: var(--callx-text-primary) !important;
-      border-color: var(--callx-line-strong) !important;
-      background: rgba(255,255,255,.55);
-    }
-
-    /* Phone visual stays contrasty but becomes a soft product object,
-       rather than a dark page section. */
-    .call-stage {
-      width: 100%;
-      min-width: 0;
-      min-height: clamp(430px, 55vw, 560px);
-      max-height: 620px;
-      border: 1px solid rgba(70,100,255,.12);
-      background:
-        radial-gradient(circle at 50% 18%, rgba(70,100,255,.20), transparent 28%),
-        linear-gradient(180deg, #FFFFFF 0%, #E9EEFA 100%);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.9),
-        0 30px 80px rgba(53,67,105,.11);
-    }
-
-    .call-stage::after {
-      background: linear-gradient(180deg, transparent 10%, rgba(255,255,255,.03) 55%, rgba(82,98,138,.09) 100%);
-    }
-
-    .call-stage-top {
-      color: var(--callx-text-tertiary);
-    }
-
-    .call-stage .status {
-      background: rgba(255,255,255,.76);
-      border-color: rgba(17,20,26,.08);
-      color: var(--callx-text-primary);
-      box-shadow: 0 8px 28px rgba(53,67,105,.07);
-    }
-
-    .avatar {
-      background: linear-gradient(135deg, #637CFF, #AAB7FF);
-      border: 0;
-      color: white;
-      box-shadow: 0 12px 32px rgba(70,100,255,.22);
-    }
-
-    .caller-name {
-      color: var(--callx-text-primary);
-    }
-
-    .caller-meta {
-      color: var(--callx-text-tertiary);
-    }
-
-    .call-transcript {
-      background: rgba(255,255,255,.80);
-      border-color: rgba(17,20,26,.08);
-      box-shadow: 0 16px 40px rgba(53,67,105,.08);
-    }
-
-    .call-transcript small {
-      color: var(--callx-text-tertiary);
-    }
-
-    .call-transcript p {
-      color: var(--callx-text-primary);
-    }
-
-    /* ---------- Hero → content transition ---------- */
-
-    .light-section {
-      background: var(--callx-cloud);
-      margin-top: -22px;
-      border-radius: 28px 28px 0 0;
-      box-shadow: 0 -12px 40px rgba(47,59,89,.035);
-    }
-
-    /* ---------- Promise ---------- */
-
-    .promise {
-      padding: clamp(78px, 9vw, 142px) 0;
-    }
-
-    .promise-grid {
-      grid-template-columns: minmax(150px, .42fr) minmax(0, 1.58fr);
-      gap: clamp(28px, 6vw, 90px);
-    }
-
-    .manifesto {
-      max-width: 960px;
-      font-size: clamp(40px, 5vw, 72px);
-      line-height: 1.04;
-      letter-spacing: -.045em;
-    }
-
-    .manifesto .soft {
-      color: #7C8492;
-    }
-
-    .promise-body {
-      max-width: 760px;
-      font-size: clamp(18px, 1.8vw, 24px);
-    }
-
-    .network-line {
-      background: var(--callx-soft-blue);
-      color: #354DC7;
-    }
-
-    /* ---------- Mosaic ---------- */
-
-    .mosaic-section {
-      background: var(--callx-cloud);
-      padding-top: 14px;
-    }
-
-    .section-head {
-      align-items: flex-end;
-    }
-
-    .section-head h2 {
-      max-width: 770px;
-      font-size: clamp(40px, 5.2vw, 72px);
-      line-height: 1.01;
-    }
-
-    .mosaic {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-      grid-template-rows: minmax(250px, 1fr) minmax(220px, .84fr);
-      min-height: 500px;
-    }
-
-    .mosaic-card {
-      min-width: 0;
-      background: var(--callx-panel);
-      border-color: var(--callx-line);
-      box-shadow: 0 16px 50px rgba(53,67,105,.045);
-    }
-
-    .mosaic-main {
-      color: var(--callx-text-primary);
-      background:
-        radial-gradient(circle at 50% 16%, rgba(70,100,255,.18), transparent 24%),
-        linear-gradient(145deg, #F9FAFF 0%, #E9EEFA 58%, #F3F5FA 100%);
-    }
-
-    .mosaic-main .state-line {
-      color: var(--callx-text-secondary);
-    }
-
-    .mosaic-main .state-pill {
-      background: rgba(255,255,255,.82);
-      color: var(--callx-text-primary);
-      border: 1px solid var(--callx-line);
-    }
-
-    .mock-phone {
-      border-color: rgba(70,100,255,.13);
-      background:
-        radial-gradient(circle at 50% 13%, rgba(70,100,255,.18), transparent 22%),
-        #FFFFFF;
-      box-shadow: 0 24px 60px rgba(65,80,120,.14);
-    }
-
-    .mock-phone::before {
-      background: #151922;
-    }
-
-    .phone-title {
-      color: var(--callx-text-tertiary);
-    }
-
-    .phone-summary {
-      background: #F5F7FC;
-      border-color: var(--callx-line);
-    }
-
-    .phone-summary strong {
-      color: var(--callx-text-primary);
-    }
-
-    .phone-summary p {
-      color: var(--callx-text-secondary);
-    }
-
-    .mosaic-state {
-      background: #EDF1FF;
-    }
-
-    .mosaic-result {
-      background: #F1F5DF;
-    }
-
-    /* ---------- Use cases: fully light ---------- */
-
-    .usecases {
-      color: var(--callx-text-primary);
-      background:
-        radial-gradient(circle at 8% 15%, rgba(70,100,255,.10), transparent 22%),
-        radial-gradient(circle at 88% 82%, rgba(201,255,87,.10), transparent 18%),
-        #EDF1F7;
-      padding: clamp(82px, 9vw, 142px) 0;
-    }
-
-    .usecase-grid {
-      grid-template-columns: minmax(260px, .58fr) minmax(0, 1.42fr);
-      gap: clamp(36px, 6vw, 86px);
-    }
-
-    .usecase-sticky .eyebrow {
-      color: var(--callx-text-secondary);
-    }
-
-    .usecase-sticky h2 {
-      max-width: 510px;
-      font-size: clamp(38px, 4.4vw, 62px);
-      line-height: 1.04;
-      color: var(--callx-text-primary);
-    }
-
-    .usecase-sticky p {
-      color: var(--callx-text-secondary);
-    }
-
-    .usecase-nav button {
-      color: #89909D;
-      background: rgba(255,255,255,.62);
-      border: 1px solid rgba(17,20,26,.055);
-    }
-
-    .usecase-nav button.active {
-      color: #2E45C4;
-      background: var(--callx-soft-blue);
-      box-shadow: inset 0 0 0 1px rgba(70,100,255,.14);
-    }
-
-    .usecase-card {
-      min-height: min(760px, 76svh);
-      background: rgba(255,255,255,.86);
-      border-color: var(--callx-line);
-      box-shadow: 0 20px 60px rgba(53,67,105,.06);
-    }
-
-    .usecase-kicker {
-      color: var(--callx-text-tertiary);
-    }
-
-    .usecase-card .status {
-      color: var(--callx-text-primary);
-      background: var(--callx-soft);
-      border-color: var(--callx-line);
-    }
-
-    .usecase-card h3 {
-      max-width: 760px;
-      color: var(--callx-text-primary);
-      font-size: clamp(32px, 3.6vw, 54px);
-      line-height: 1.05;
-    }
-
-    .scenario-visual {
-      min-height: clamp(290px, 34vw, 390px);
-      background:
-        radial-gradient(circle at 52% 18%, rgba(70,100,255,.18), transparent 30%),
-        linear-gradient(145deg, #EEF2FA, #DDE5F2);
-      border-color: rgba(17,20,26,.07);
-    }
-
-    .scenario-chip {
-      color: #334052;
-      background: rgba(255,255,255,.78);
-      border-color: rgba(17,20,26,.08);
-    }
-
-    .scenario-result {
-      background: rgba(255,255,255,.86);
-      border-color: rgba(17,20,26,.08);
-      box-shadow: 0 16px 38px rgba(53,67,105,.08);
-    }
-
-    .scenario-result strong {
-      color: var(--callx-text-primary);
-    }
-
-    .scenario-result p {
-      color: var(--callx-text-secondary);
-    }
-
-    .mini-step {
-      background: #F4F6FA;
-      border-color: var(--callx-line);
-    }
-
-    .mini-step small {
-      color: var(--callx-text-tertiary);
-    }
-
-    .mini-step p {
-      color: var(--callx-text-secondary);
-    }
-
-    /* ---------- Survey ---------- */
-
-    .survey {
-      background: #FAFBFD;
-    }
-
-    .survey-top h2 {
-      max-width: 760px;
-      margin-inline: auto;
-      font-size: clamp(38px, 4.8vw, 64px);
-      line-height: 1.05;
-    }
-
-    .survey-card {
-      box-shadow: 0 22px 70px rgba(53,67,105,.07);
-    }
-
-    /* ---------- Final CTA: light ---------- */
-
-    .final-cta {
-      color: var(--callx-text-primary);
-      background:
-        radial-gradient(circle at 78% 20%, rgba(70,100,255,.15), transparent 30%),
-        radial-gradient(circle at 16% 82%, rgba(201,255,87,.14), transparent 23%),
-        linear-gradient(180deg, #F1F4FA 0%, #E8EDF6 100%);
-    }
-
-    .final-cta .eyebrow {
-      color: var(--callx-text-secondary);
-    }
-
-    .final-cta h2 {
-      max-width: 880px;
-      font-size: clamp(46px, 6vw, 82px);
-      line-height: .99;
-      color: var(--callx-text-primary);
-    }
-
-    .final-cta p {
-      color: var(--callx-text-secondary);
-    }
-
-    .footer {
-      background: #E8EDF6;
-      color: var(--callx-text-tertiary);
-      border-top-color: rgba(17,20,26,.07);
-    }
-
-    /* ---------- Medium tablets / foldables ---------- */
-
-    @media (max-width: 1100px) {
-      .hero-grid {
-        grid-template-columns: minmax(0, 1fr) minmax(290px, .78fr);
-      }
-
-      .hero h1 {
-        font-size: clamp(48px, 7vw, 78px);
-      }
-
-      .usecase-grid {
-        grid-template-columns: minmax(240px, .5fr) minmax(0, 1fr);
-        gap: 36px;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .hero-inner {
-        align-items: flex-end;
-      }
-
-      .hero-grid,
-      .promise-grid,
-      .usecase-grid,
-      .final-cta-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-grid {
-        gap: 28px;
-      }
-
-      .hero-copy {
-        max-width: 760px;
-      }
-
-      .hero h1 {
-        max-width: 760px;
-      }
-
-      .call-stage {
-        min-height: 410px;
-        max-height: none;
-      }
-
-      .promise .eyebrow,
-      .usecase-sticky {
-        position: static;
-      }
-
-      .usecase-nav {
-        display: none;
-      }
-
-      .usecase-card {
-        min-height: auto;
-      }
-    }
-
-    /* ---------- Phone / narrow foldable ---------- */
-
-    @media (max-width: 767px) {
-      :root {
-        --page-pad: clamp(16px, 5vw, 22px);
-      }
-
-      .container {
-        width: 100%;
-      }
-
-      .nav-wrap {
-        top: max(8px, env(safe-area-inset-top));
-        padding-inline: 10px;
-      }
-
-      .nav {
-        min-height: 52px;
-        padding: 7px 7px 7px 13px;
-        gap: 6px;
-      }
-
-      .brand {
-        font-size: 18px;
-      }
-
-      .nav-right {
-        gap: 4px;
-      }
-
-      .lang {
-        font-size: 11px;
-      }
-
-      .nav .btn {
-        min-height: 38px;
-        padding-inline: 12px;
-        white-space: nowrap;
-      }
-
-      .hero {
-        min-height: auto;
-      }
-
-      .hero-inner {
-        min-height: auto;
-        padding-top: calc(86px + env(safe-area-inset-top));
-        padding-bottom: 52px;
-        align-items: stretch;
-      }
-
-      .hero-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 28px;
-      }
-
-      .hero-copy {
-        width: 100%;
-      }
-
-      .hero .eyebrow {
-        margin-bottom: 16px;
-      }
-
-      .hero h1 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(42px, 12.4vw, 58px);
-        line-height: 1.01;
-        letter-spacing: -.05em;
-      }
-
-      .hero-sub {
-        width: 100%;
-        max-width: 580px;
-        font-size: 16px;
-        line-height: 1.58;
-      }
-
-      .hero-cta-row {
-        width: 100%;
-        margin-top: 24px;
-        gap: 9px;
-      }
-
-      .hero-cta-row .btn-primary {
-        min-height: 48px;
-      }
-
-      .hero-cta-row .btn-secondary {
-        display: none;
-      }
-
-      .hero-reassurance {
-        width: 100%;
-        margin-top: 3px;
-      }
-
-      .call-stage {
-        width: 100%;
-        min-height: clamp(370px, 112vw, 440px);
-        border-radius: 24px;
-      }
-
-      .call-stage-top {
-        top: 16px;
-        left: 16px;
-        right: 16px;
-      }
-
-      .caller {
-        top: 84px;
-      }
-
-      .avatar {
-        width: 72px;
-        height: 72px;
-        margin-bottom: 14px;
-      }
-
-      .caller-name {
-        font-size: 23px;
-      }
-
-      .call-transcript {
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-        padding: 15px;
-        border-radius: 18px;
-      }
-
-      .light-section {
-        margin-top: -20px;
-        border-radius: 22px 22px 0 0;
-      }
-
-      .promise {
-        padding: 72px 0 86px;
-      }
-
-      .promise-grid {
-        gap: 24px;
-      }
-
-      .manifesto {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(36px, 10.6vw, 50px);
-        line-height: 1.07;
-        letter-spacing: -.045em;
-      }
-
-      .promise-body {
-        margin-top: 24px;
-        font-size: 17px;
-        line-height: 1.58;
-      }
-
-      .network-line {
-        width: 100%;
-        margin-top: 28px;
-        font-size: 13px;
-        line-height: 1.4;
-      }
-
-      .mosaic-section {
-        padding-bottom: 94px;
-      }
-
-      .section-head {
-        display: block;
-        margin-bottom: 22px;
-      }
-
-      .section-head h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(36px, 10.5vw, 49px);
-        line-height: 1.05;
-      }
-
-      .section-head p {
-        width: 100%;
-        max-width: 560px;
-        margin-top: 16px;
-      }
-
-      .mosaic {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        min-height: 0;
-        gap: 8px;
-      }
-
-      .mosaic-main {
-        grid-row: auto;
-        min-height: 570px;
-        padding: 18px;
-        border-radius: 22px;
-      }
-
-      .mock-phone {
-        width: min(78%, 290px);
-        border-radius: 30px;
-      }
-
-      .mosaic-title {
-        max-width: 100%;
-        font-size: clamp(27px, 8vw, 36px);
-        line-height: 1.08;
-      }
-
-      .mosaic-small {
-        min-height: 200px;
-        padding: 18px;
-        border-radius: 22px;
-      }
-
-      .mosaic-small h3 {
-        font-size: clamp(25px, 7.3vw, 32px);
-      }
-
-      .usecases {
-        padding: 78px 0 92px;
-      }
-
-      .usecase-grid {
-        gap: 34px;
-      }
-
-      .usecase-sticky h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(36px, 10.5vw, 49px);
-        line-height: 1.05;
-      }
-
-      .usecase-sticky p {
-        margin-top: 18px;
-      }
-
-      .usecase-cards {
-        gap: 18px;
-      }
-
-      .usecase-card {
-        width: 100%;
-        padding: 17px;
-        border-radius: 22px;
-        gap: 20px;
-      }
-
-      .usecase-card h3 {
-        width: 100%;
-        max-width: 100%;
-        margin-top: 12px;
-        font-size: clamp(30px, 8.8vw, 40px);
-        line-height: 1.08;
-      }
-
-      .usecase-kicker {
-        align-items: flex-start;
-        flex-wrap: wrap;
-        row-gap: 8px;
-      }
-
-      .scenario-visual {
-        min-height: clamp(310px, 92vw, 390px);
-        border-radius: 19px;
-      }
-
-      .scenario-content {
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-      }
-
-      .scenario-result {
-        padding: 15px;
-        border-radius: 17px;
-      }
-
-      .usecase-bottom {
-        grid-template-columns: 1fr;
-      }
-
-      .survey {
-        padding: 78px 0 92px;
-      }
-
-      .survey-top {
-        margin-bottom: 30px;
-      }
-
-      .survey-top h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(36px, 10.4vw, 48px);
-        line-height: 1.06;
-      }
-
-      .survey-card {
-        padding: 20px 16px;
-        border-radius: 22px;
-      }
-
-      .question h3 {
-        font-size: clamp(27px, 7.8vw, 35px);
-        line-height: 1.14;
-      }
-
-      .options {
-        grid-template-columns: 1fr;
-      }
-
-      .option {
-        min-height: 58px;
-        padding: 14px;
-      }
-
-      .survey-actions {
-        gap: 8px;
-      }
-
-      .survey-actions .btn {
-        flex: 1;
-      }
-
-      .final-cta {
-        padding: 86px 0 118px;
-      }
-
-      .final-cta-inner {
-        gap: 28px;
-      }
-
-      .final-cta h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(40px, 11.8vw, 56px);
-        line-height: 1.02;
-      }
-
-      .final-side {
-        width: 100%;
-      }
-
-      .final-side .btn {
-        min-height: 48px;
-      }
-
-      .footer {
-        padding-bottom: calc(100px + env(safe-area-inset-bottom));
-      }
-
-      .mobile-sticky {
-        background: rgba(255,255,255,.90);
-        border-color: rgba(17,20,26,.09);
-        color: var(--callx-text-primary);
-        box-shadow: 0 16px 45px rgba(37,47,70,.14);
-      }
-
-      .mobile-sticky small {
-        color: var(--callx-text-secondary);
-      }
-    }
-
-    @media (max-width: 390px) {
-      .hero h1 {
-        font-size: clamp(40px, 12vw, 48px);
-      }
-
-      .hero-sub {
-        font-size: 15px;
-      }
-
-      .call-stage {
-        min-height: 360px;
-      }
-
-      .manifesto,
-      .section-head h2,
-      .usecase-sticky h2,
-      .survey-top h2 {
-        font-size: clamp(34px, 10.2vw, 42px);
-      }
-
-      .usecase-card h3 {
-        font-size: clamp(29px, 8.4vw, 36px);
-      }
-
-      .final-cta h2 {
-        font-size: clamp(38px, 11vw, 48px);
-      }
-
-      .mobile-sticky small {
-        max-width: 140px;
-        font-size: 11px;
-        line-height: 1.3;
-      }
-    }
-
-    @media (max-width: 340px) {
-      :root {
-        --page-pad: 13px;
-      }
-
-      .nav {
-        padding-left: 11px;
-      }
-
-      .brand {
-        font-size: 17px;
-      }
-
-      .lang {
-        display: none;
-      }
-
-      .hero h1 {
-        font-size: 38px;
-      }
-
-      .hero-sub {
-        font-size: 14px;
-      }
-
-      .call-stage {
-        min-height: 340px;
-      }
-
-      .call-stage .status {
-        max-width: 156px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .mosaic-main {
-        min-height: 520px;
-      }
-
-      .mock-phone {
-        width: 82%;
-      }
-
-      .question h3 {
-        font-size: 26px;
-      }
+  <style id="callx-visibility-overrides">
+    :root{
+      --bg:#F3F6FA;
+      --surface:#FFFFFF;
+      --surface-soft:#EAF0F6;
+      --surface-blue:#EAF0FF;
+      --surface-green:#F0F5E5;
+      --text:#10131A;
+      --muted:#4F5967;
+      --subtle:#6E7785;
+      --line:#D7DEE8;
+      --line-strong:#C7D0DB;
+    }
+    body{color:var(--text);background:var(--bg)}
+    .header{background:rgba(243,246,250,.92);border-bottom-color:rgba(16,19,26,.09)}
+    .nav-links,.hero-note,.risk-toast p,.section-head>p,.problem-card p,.how-step p,.split-copy p,.survey-intro p,.survey-help,.faq-answer,.footer-meta,.footer-copy p,.thanks-copy p{color:var(--muted)}
+    .hero{background:
+      radial-gradient(circle at 78% 10%,rgba(70,100,255,.16),transparent 28%),
+      radial-gradient(circle at 14% 80%,rgba(201,255,87,.12),transparent 20%),
+      linear-gradient(180deg,#FAFBFD,#F2F5F9)}
+    .hero h1,.section-head h2,.split-copy h2,.survey-intro h2,.trust-copy h2,.faq-head h2{color:#0F131A}
+    .hero-sub{color:#425063}
+    .btn-secondary{background:#fff;border-color:#BCC8D6;color:#18202B}
+    .btn-secondary:hover{background:#F6F9FD;border-color:#AAB7C6}
+    .video-shell,.problem-card,.how-panel,.split-panel,.survey-card,.trust-shell,.faq-item,.footer-copy,.survey-thanks,.usecase-card{box-shadow:0 12px 28px rgba(33,45,70,.05)}
+    .video-shell{border-color:#D0D8E2}
+    .risk-toast{background:rgba(255,255,255,.94);border-color:rgba(16,19,26,.10)}
+    .section-soft{background:#EEF3F8}
+    .problem-card{border-color:var(--line-strong)}
+    .problem-card:nth-child(1){background:linear-gradient(160deg,#FFFFFF,#ECF1FF)}
+    .problem-card:nth-child(2){background:linear-gradient(160deg,#FFFFFF,#F1F5E7)}
+    .problem-kicker{color:#687282}
+    .problem-visual{
+      min-height:270px;
+      margin:26px 0 24px;
+      background:#fff;
+      border:1px solid rgba(16,19,26,.08);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
+    }
+    .problem-photo{width:100%;height:100%;object-fit:cover;display:block}
+    .how-panel{border-color:var(--line-strong);background:linear-gradient(135deg,#DDE6FF,#F8FAFC 52%,#EEF4DA)}
+    .how-step{background:rgba(255,255,255,.95);border-color:rgba(16,19,26,.08)}
+    .survey{background:#EBF0F6}
+    .survey-card{border-color:var(--line-strong)}
+    .option{background:#fff;border-color:var(--line-strong)}
+    .option:hover{background:#F5F8FF;border-color:rgba(70,100,255,.42)}
+    .option.selected{background:#EEF2FF;border-color:var(--cobalt);box-shadow:inset 0 0 0 1px var(--cobalt)}
+    .faq-item{border-color:var(--line-strong);background:#fff}
+    .footer{background:#E8EEF5;border-top-color:#D0D7E0}
+    @media (max-width:767px){
+      .problem-visual{min-height:230px}
     }
   </style>
-<style id="landbook-inspired-final-overrides">
-/* =========================================================
-   CallX × Landbook-inspired refinement
-   Light theme / mobile rules preserved
-   ========================================================= */
 
-:root{
-  --lb-surface:#FFFFFF;
-  --lb-base:#F7F8FB;
-  --lb-soft:#EFF2F6;
-  --lb-border:rgba(17,20,26,.10);
-  --lb-border-strong:rgba(17,20,26,.15);
-}
+</head>
 
-/* Header: flatter, utility-like, less floating SaaS pill */
-.nav-wrap{
-  position:sticky;
-  top:0;
-  padding:0;
-  background:rgba(247,248,251,.90);
-  border-bottom:1px solid var(--lb-border);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
-.nav{
-  max-width:var(--content-max);
-  min-height:64px;
-  border-radius:0;
-  padding:9px var(--page-pad);
-  background:transparent;
-  border:0;
-  box-shadow:none;
-}
-.nav::after{
-  content:"어떻게 작동하나요   ·   사용 장면   ·   설문";
-  margin-left:18px;
-  color:var(--callx-text-secondary);
-  font-size:12px;
-  font-weight:700;
-  word-spacing:5px;
-}
-.nav-right{margin-left:auto}
-
-/* Hero: editorial, asymmetrical, very large type */
-.hero{
-  min-height:auto;
-  padding:clamp(64px,7vw,110px) 0 28px;
-  background:
-    radial-gradient(circle at 80% 16%,rgba(70,100,255,.10),transparent 28%),
-    linear-gradient(180deg,#FAFBFD 0%,#F5F7FB 100%);
-}
-.hero::before{opacity:.35}
-.hero-inner{
-  min-height:auto;
-  padding-top:0;
-  padding-bottom:0;
-  align-items:end;
-}
-.hero-grid{
-  grid-template-columns:minmax(0,1.38fr) minmax(330px,.62fr);
-  gap:clamp(38px,6vw,92px);
-  align-items:end;
-}
-.hero-copy{
-  align-self:end;
-  padding-bottom:clamp(18px,3vw,36px);
-}
-.hero .eyebrow{
-  display:inline-flex;
-  padding:8px 11px;
-  border:1px solid var(--lb-border);
-  border-radius:999px;
-  background:#fff;
-  color:var(--callx-text-secondary);
-  margin-bottom:22px;
-}
-.hero .eyebrow::before{box-shadow:none}
-.hero h1{
-  max-width:980px;
-  font-size:clamp(58px,7.7vw,116px);
-  line-height:.91;
-  letter-spacing:-.064em;
-  font-weight:800;
-}
-.hero h1 .accent{
-  display:block;
-  color:#7F8794;
-  font-weight:500;
-}
-.hero-sub{
-  max-width:690px;
-  color:#333A45;
-  font-weight:600;
-  font-size:clamp(17px,1.5vw,22px);
-  line-height:1.5;
-}
-.hero-cta-row{
-  margin-top:28px;
-  padding-top:18px;
-  border-top:1px solid var(--lb-border-strong);
-}
-.hero-reassurance{color:var(--callx-text-secondary)}
-
-.hero-side-stack{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  min-width:0;
-}
-.landbook-utility{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:14px;
-  align-items:start;
-  padding:14px 0;
-  border-top:1px solid var(--lb-border-strong);
-  border-bottom:1px solid var(--lb-border-strong);
-}
-.landbook-utility strong{
-  display:block;
-  font-size:14px;
-  margin-bottom:3px;
-}
-.landbook-utility span{
-  display:block;
-  color:var(--callx-text-secondary);
-  font-size:12px;
-  line-height:1.45;
-}
-.landbook-trust{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 14px;
-  border:1px solid var(--lb-border);
-  border-radius:15px;
-  background:#fff;
-}
-.landbook-trust p{
-  color:var(--callx-text-secondary);
-  font-size:12px;
-  line-height:1.45;
-  font-weight:700;
-}
-.trust-dots{display:flex}
-.trust-dots span{
-  width:30px;height:30px;border-radius:50%;
-  display:grid;place-items:center;
-  margin-left:-6px;
-  border:2px solid #fff;
-  color:#fff;font-size:9px;font-weight:800;
-}
-.trust-dots span:first-child{margin-left:0;background:#4664FF}
-.trust-dots span:nth-child(2){background:#8293FF}
-.trust-dots span:nth-child(3){background:#11141A}
-.trust-dots span:nth-child(4){background:#7E8795}
-
-/* Product frame: less phone mockup, more large showcase window */
-.call-stage{
-  min-height:420px;
-  max-height:none;
-  border-radius:20px;
-  background:linear-gradient(145deg,#EEF2F8,#DEE6F2);
-  border:1px solid var(--lb-border);
-  box-shadow:0 22px 60px rgba(53,67,105,.08);
-}
-.call-stage-top{
-  top:16px;left:16px;right:16px;
-}
-.caller{top:92px}
-.call-transcript{
-  border-radius:16px;
-  box-shadow:0 14px 34px rgba(53,67,105,.07);
-}
-
-/* Landbook-style centered pill rail */
-.landbook-tabrail-wrap{
-  background:var(--callx-cloud);
-  padding-top:18px;
-}
-.landbook-tabrail{
-  display:flex;
-  justify-content:center;
-  gap:7px;
-  overflow-x:auto;
-  padding:4px 0 18px;
-  scrollbar-width:none;
-}
-.landbook-tabrail::-webkit-scrollbar{display:none}
-.landbook-tab{
-  flex:0 0 auto;
-  border:1px solid var(--lb-border);
-  background:#fff;
-  color:var(--callx-text-secondary);
-  border-radius:999px;
-  padding:10px 15px;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
-}
-.landbook-tab.active{
-  background:var(--callx-text-primary);
-  color:#fff;
-  border-color:var(--callx-text-primary);
-}
-
-/* Promise section: editorial two-column layout */
-.light-section{
-  margin-top:0;
-  border-radius:0;
-  box-shadow:none;
-}
-.promise{
-  padding:clamp(92px,10vw,160px) 0 78px;
-}
-.promise-grid{
-  grid-template-columns:minmax(190px,.44fr) minmax(0,1.56fr);
-  gap:clamp(38px,7vw,110px);
-}
-.promise .eyebrow{
-  position:static;
-  font-size:clamp(17px,1.6vw,22px);
-  text-transform:none;
-  letter-spacing:-.02em;
-  color:var(--callx-text-secondary);
-}
-.promise .eyebrow::before{display:none}
-.manifesto{
-  font-size:clamp(42px,5.4vw,78px);
-  line-height:1.02;
-  max-width:940px;
-}
-.promise-body{
-  max-width:770px;
-  font-size:clamp(19px,1.85vw,25px);
-}
-
-/* Big media / showcase panel */
-.mosaic-section{
-  padding-top:18px;
-  padding-bottom:clamp(94px,10vw,150px);
-}
-.section-head{
-  display:grid;
-  grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);
-  align-items:end;
-  gap:32px;
-  margin-bottom:26px;
-}
-.section-badge-callx{
-  grid-column:1/-1;
-  width:max-content;
-  padding:8px 11px;
-  border-radius:999px;
-  border:1px solid var(--lb-border);
-  background:#fff;
-  color:var(--callx-text-secondary);
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  margin-bottom:-8px;
-}
-.section-head h2{
-  font-size:clamp(42px,5.5vw,78px);
-  font-weight:750;
-  line-height:.99;
-}
-.section-head p{
-  justify-self:end;
-  max-width:420px;
-}
-.mosaic{
-  padding:clamp(18px,3vw,36px);
-  border-radius:30px;
-  background:linear-gradient(135deg,#DDE4FF,#EFF2F8 55%,#ECF5D8);
-  grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);
-  grid-template-rows:minmax(250px,1fr) minmax(220px,.82fr);
-  gap:9px;
-  box-shadow:inset 0 0 0 1px rgba(17,20,26,.03);
-}
-.mosaic-card{
-  border-radius:18px;
-  box-shadow:0 16px 42px rgba(53,67,105,.045);
-}
-.mosaic-main{
-  background:#fff;
-}
-.mock-phone{
-  border-radius:24px;
-  width:min(58%,310px);
-  box-shadow:0 20px 48px rgba(53,67,105,.12);
-}
-.mosaic-state{background:#F7F8FC}
-.mosaic-result{background:#F4F6EA}
-
-/* Use cases: Landbook accordion-like / border-led */
-.usecases{
-  background:#F7F8FB;
-  padding:clamp(94px,10vw,150px) 0;
-  border-top:1px solid var(--lb-border);
-  border-bottom:1px solid var(--lb-border);
-}
-.usecase-grid{
-  grid-template-columns:minmax(270px,.62fr) minmax(0,1.38fr);
-  gap:clamp(34px,6vw,84px);
-}
-.usecase-sticky{
-  top:98px;
-}
-.usecase-sticky .eyebrow{
-  display:none;
-}
-.usecase-sticky h2{
-  font-size:clamp(40px,4.5vw,64px);
-}
-.usecase-nav{
-  margin-top:34px;
-  gap:0;
-  border-top:1px solid var(--lb-border-strong);
-}
-.usecase-nav button{
-  border-radius:0;
-  border:0;
-  border-bottom:1px solid var(--lb-border-strong);
-  background:transparent;
-  padding:17px 4px;
-  color:var(--callx-text-secondary);
-}
-.usecase-nav button.active{
-  background:transparent;
-  color:var(--callx-text-primary);
-  box-shadow:none;
-}
-.usecase-cards{gap:18px}
-.usecase-card{
-  min-height:auto;
-  padding:22px;
-  border-radius:20px;
-  background:#fff;
-  border:1px solid var(--lb-border);
-  box-shadow:none;
-}
-.usecase-card h3{
-  font-size:clamp(30px,3.4vw,50px);
-  margin-top:10px;
-}
-.scenario-visual{
-  min-height:330px;
-  border-radius:17px;
-  background:linear-gradient(145deg,#F0F3F8,#E1E7F0);
-}
-.scenario-result{
-  border-radius:15px;
-  box-shadow:none;
-}
-.usecase-bottom{
-  border-top:1px solid var(--lb-border);
-  padding-top:12px;
-}
-.mini-step{
-  background:transparent;
-  border:0;
-  padding:8px 4px;
-}
-
-/* Survey: flatter editorial module */
-.survey{
-  background:#F1F4F8;
-  border-bottom:1px solid var(--lb-border);
-  padding:clamp(92px,10vw,145px) 0;
-}
-.survey-shell{
-  max-width:1180px;
-  display:grid;
-  grid-template-columns:minmax(0,.68fr) minmax(0,1.32fr);
-  gap:clamp(34px,6vw,80px);
-  align-items:start;
-}
-.survey-top{
-  text-align:left;
-  margin-bottom:0;
-}
-.survey-top .eyebrow{display:none}
-.survey-top h2{
-  font-size:clamp(40px,4.7vw,64px);
-  margin-inline:0;
-}
-.survey-top p{
-  margin-left:0;
-}
-.survey-card{
-  border-radius:20px;
-  box-shadow:none;
-  border:1px solid var(--lb-border);
-}
-
-/* FAQ */
-.callx-faq{
-  padding:clamp(88px,9vw,135px) 0 46px;
-  background:var(--callx-cloud);
-}
-.faq-head{
-  margin-bottom:28px;
-}
-.faq-head h2{
-  font-size:clamp(42px,5vw,70px);
-  line-height:1;
-  letter-spacing:-.045em;
-  margin-top:14px;
-}
-.faq-head h2 span{
-  display:block;
-  color:#858D99;
-  font-size:.58em;
-  font-weight:500;
-  margin-top:8px;
-}
-.faq-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-.faq-item{
-  background:#fff;
-  border:1px solid var(--lb-border);
-  border-radius:15px;
-  padding:0 16px;
-}
-.faq-question{
-  width:100%;
-  border:0;
-  background:transparent;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:18px;
-  text-align:left;
-  padding:17px 0;
-  font-weight:700;
-  cursor:pointer;
-}
-.faq-question b{
-  font-size:21px;
-  color:var(--callx-text-tertiary);
-  transition:.2s var(--ease-callx);
-}
-.faq-item.open .faq-question b{
-  transform:rotate(45deg);
-}
-.faq-answer{
-  display:none;
-  padding:0 0 17px;
-  color:var(--callx-text-secondary);
-  line-height:1.6;
-  font-size:14px;
-}
-.faq-item.open .faq-answer{display:block}
-
-/* Final CTA: light, boxed, Landbook-like */
-.final-cta{
-  padding:46px 0 clamp(96px,10vw,150px);
-  background:var(--callx-cloud);
-}
-.final-cta-inner{
-  border:1px solid var(--lb-border);
-  border-radius:26px;
-  padding:clamp(28px,5vw,58px);
-  background:linear-gradient(135deg,#E6EBFF,#F7F8FB 55%,#EFF5DC);
-  grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr);
-}
-.final-cta .eyebrow{
-  color:var(--callx-text-secondary);
-}
-.final-cta h2{
-  font-size:clamp(46px,6vw,84px);
-}
-
-/* Responsive safeguards */
-@media(max-width:1100px){
-  .nav::after{display:none}
-  .hero-grid{grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr)}
-}
-
-@media(max-width:900px){
-  .hero-grid,
-  .promise-grid,
-  .survey-shell,
-  .final-cta-inner{
-    grid-template-columns:1fr;
-  }
-  .hero-side-stack{max-width:720px}
-  .promise-grid{gap:28px}
-  .promise .eyebrow{font-size:17px}
-  .section-head{grid-template-columns:1fr}
-  .section-head p{justify-self:start}
-  .usecase-grid{grid-template-columns:1fr}
-  .usecase-sticky{position:static}
-  .faq-grid{grid-template-columns:1fr}
-}
-
-@media(max-width:767px){
-  .nav-wrap{top:0}
-  .nav{min-height:56px;padding:7px 10px}
-  .hero{
-    padding-top:44px;
-    padding-bottom:18px;
-  }
-  .hero-grid{
-    display:flex;
-    flex-direction:column;
-    gap:26px;
-  }
-  .hero-copy{padding-bottom:0}
-  .hero h1{
-    font-size:clamp(42px,12.4vw,56px);
-    line-height:.98;
-  }
-  .hero-sub{font-size:16px}
-  .hero-cta-row{
-    border-top:0;
-    padding-top:0;
-  }
-  .landbook-utility{
-    grid-template-columns:1fr auto;
-  }
-  .call-stage{
-    min-height:360px;
-  }
-  .landbook-tabrail-wrap{padding-top:8px}
-  .landbook-tabrail{
-    justify-content:flex-start;
-    padding-left:0;
-    padding-right:0;
-  }
-  .promise{padding:72px 0 82px}
-  .manifesto{font-size:clamp(36px,10.5vw,48px)}
-  .section-head h2{
-    font-size:clamp(36px,10.5vw,48px);
-  }
-  .mosaic{
-    padding:10px;
-    border-radius:22px;
-    grid-template-columns:1fr;
-    grid-template-rows:auto;
-  }
-  .mosaic-main{
-    min-height:530px;
-  }
-  .mosaic-small{
-    min-height:190px;
-  }
-  .usecases{
-    padding:76px 0 90px;
-  }
-  .usecase-sticky h2{
-    font-size:clamp(36px,10.4vw,48px);
-  }
-  .usecase-nav{display:none}
-  .usecase-card{
-    padding:16px;
-    border-radius:18px;
-  }
-  .scenario-visual{
-    min-height:310px;
-  }
-  .survey-shell{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:28px;
-  }
-  .survey-top h2{
-    font-size:clamp(36px,10.4vw,48px);
-  }
-  .faq-head h2{
-    font-size:clamp(36px,10.4vw,48px);
-  }
-  .final-cta-inner{
-    padding:22px;
-    border-radius:22px;
-  }
-}
-
-@media(max-width:390px){
-  .hero h1{font-size:clamp(40px,12vw,48px)}
-  .landbook-utility{
-    grid-template-columns:1fr;
-  }
-  .landbook-utility .btn{width:100%}
-  .call-stage{min-height:345px}
-  .mosaic-main{min-height:500px}
-}
-
-@media(max-width:340px){
-  .hero h1{font-size:38px}
-  .landbook-trust{align-items:flex-start}
-  .call-stage{min-height:330px}
-}
-</style></head>
 <body>
-<div class="nav-wrap">
-<nav aria-label="CallX navigation" class="nav">
-<a aria-label="CallX home" class="brand" href="#top">
-<span>Call<span class="brand-x">X</span></span>
-</a>
-<div class="nav-right">
-<button aria-label="언어 전환" class="lang" type="button">KR / FR</button>
-<a class="btn btn-primary" data-event="nav_cta_click" href="#survey">시작하기</a>
-</div>
-</nav>
-</div>
-<main id="top">
-<section class="hero">
-<div class="container hero-inner">
-<div class="hero-grid">
-<div class="hero-copy reveal">
-<div class="eyebrow">CallX AI Calling</div>
-<h1>
-              받을 필요 없는 전화까지 <span class="accent">직접 받지 마세요.</span>
-</h1>
-<p class="hero-sub">
-              CallX가 필요한 대화를 대신하고, 당신에게 필요한 결과만 남깁니다.
-              평소처럼 전화만 쓰면 됩니다.
-            </p>
-<div class="hero-cta-row">
-<a class="btn btn-primary" data-event="hero_cta_click" href="#survey">먼저 써보기</a>
-<a class="btn btn-secondary" href="#usecases" style="color:white;border-color:rgba(255,255,255,.16)">어떻게 작동하는지 보기</a>
-<span class="hero-reassurance">앱을 새로 배우지 않아도 됩니다.</span>
-</div>
-</div>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="CALL X home">CALL <span class="x">X</span></a>
 
-<div class="hero-side-stack"><div class="landbook-utility">
-<div>
-<strong>평소처럼 전화만 쓰세요.</strong>
-<span>앱을 새로 배우거나 복잡하게 조작할 필요 없습니다.</span>
-</div>
-<a class="btn btn-primary" data-event="hero_side_cta_click" href="#survey">먼저 써보기</a>
-</div><div class="landbook-trust">
-<div aria-hidden="true" class="trust-dots">
-<span>업</span><span>육</span><span>이</span><span>가</span>
-</div>
-<p>업무·육아·이동·가족 케어처럼<br/>전화가 끼어드는 순간을 위한 CallX</p>
-</div><div aria-label="CallX call interface preview" class="call-stage reveal">
-<div class="call-stage-top">
-<span>10:41</span>
-<span class="status"><span class="pulse-dot"></span> CallX answering</span>
-</div>
-<div class="caller">
-<div class="avatar">R</div>
-<div class="caller-name">Repair Center</div>
-<div class="caller-meta">Incoming call · 00:32</div>
-</div>
-<div class="call-transcript">
-<small>CallX가 확인한 내용</small>
-<p>“금요일 오후 방문 가능 여부와 예상 수리 시간을 확인했습니다.”</p>
-</div>
-</div></div></div>
-</div>
-</section><div class="landbook-tabrail-wrap">
-<div class="container">
-<div aria-label="CallX use case tabs" class="landbook-tabrail">
-<button class="landbook-tab active" data-target="case-1">대신 받기</button>
-<button class="landbook-tab" data-target="case-2">예약·문의</button>
-<button class="landbook-tab" data-target="case-3">중요전화 선별</button>
-</div>
-</div>
-</div>
-<div class="light-section">
-<section class="promise">
-<div class="container promise-grid">
-<div class="eyebrow reveal">Why CallX</div>
-<div class="reveal">
-<h2 class="manifesto">
-              전화는 그대로. <span class="soft">해야 할 일은 줄어들도록.</span>
-</h2>
-<p class="promise-body">
-              중요한 건 AI가 얼마나 복잡한지가 아니라, 사용자가 얼마나 덜 신경 써도 되는지입니다.
-              CallX는 통화 전후의 번거로운 일을 뒤에서 처리하고, 필요한 순간에만 결과를 보여줍니다.
-            </p>
-<div class="network-line">
-              앱 설치·복잡한 조작 없이 전화만으로
-            </div>
-</div>
-</div>
-</section>
-<section aria-labelledby="mosaic-title" class="mosaic-section">
-<div class="container">
-<div class="section-head"><div class="section-badge-callx">Call experience</div>
-<h2 class="reveal" id="mosaic-title">한 통의 전화가 이렇게 정리됩니다.</h2>
-<p class="reveal">
-              기술 설명 대신 실제 통화 흐름을 보여줍니다. 전화가 오고, CallX가 대응하고,
-              결과만 사용자에게 남습니다.
-            </p>
-</div>
-<div class="mosaic">
-<article class="mosaic-card mosaic-main reveal">
-<div class="state-line">
-<span class="state-pill"><span class="pulse-dot"></span> Handling now</span>
-<span>01 / Call handling</span>
-</div>
-<div aria-hidden="true" class="mock-phone">
-<div class="phone-inner">
-<div class="phone-title">Call result</div>
-<div class="phone-summary">
-<strong>방문 일정 확인 완료</strong>
-<p>8월 14일 금요일 15:00 방문 가능. 예상 소요 시간은 약 40분입니다.</p>
-</div>
-</div>
-</div>
-<div class="mosaic-title">직접 통화하지 않아도<br/>결과는 놓치지 않게.</div>
-</article>
-<article class="mosaic-card mosaic-small mosaic-state reveal">
-<div class="state-line">
-<span>02 / Action</span>
-<span class="state-pill"><span class="pulse-dot"></span> CallX asking</span>
-</div>
-<div>
-<h3>“금요일 오후 방문 가능한가요?”</h3>
-<p style="margin-top:14px;">사용자가 미리 정한 목적에 맞춰 필요한 내용만 확인합니다.</p>
-</div>
-</article>
-<article class="mosaic-card mosaic-small mosaic-result reveal">
-<div class="state-line">
-<span>03 / Result</span>
-<span class="state-pill">Done</span>
-</div>
-<div>
-<h3>당신은 결과만 확인.</h3>
-<p style="margin-top:14px;">통화를 위해 하던 일을 멈출 필요가 없습니다.</p>
-</div>
-</article>
-</div>
-</div>
-</section>
-</div>
-<section class="usecases" id="usecases">
-<div class="container usecase-grid">
-<aside class="usecase-sticky reveal"><div class="section-badge-callx">Use cases</div>
-<div class="eyebrow">Use cases</div>
-<h2>전화 때문에 하던 일을 멈추지 마세요.</h2>
-<p>
-            상황은 달라도 구조는 같습니다.
-            CallX가 필요한 대화를 처리하고, 사용자는 필요한 순간에만 개입합니다.
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#how" data-i18n="navHow">어떻게 보호하나요</a>
+        <a href="#survey" data-i18n="navSurvey">빠른 설문</a>
+        <a href="#usecases" data-i18n="navCases">사용 장면</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" data-lang="ko" aria-pressed="true">KR</button>
+          <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+        </div>
+        <a class="btn btn-primary" href="#survey" data-i18n="navCta">의견 남기기</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- 01 HERO -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow" data-i18n="heroEyebrow">CALL X · Family Call Protection</div>
+
+          <h1>
+            <span data-i18n="heroTitle1">가족에게 걸려온 수상한 전화,</span>
+            <span class="soft" data-i18n="heroTitle2">혼자 판단하게 두지 않도록.</span>
+          </h1>
+
+          <p class="hero-sub" data-i18n="heroDesc">
+            키즈·시니어에게 위험한 전화가 걸려오거나 통화 중 위험 신호가 감지되면 보호자에게 알리고,
+            필요한 순간에는 함께 개입할 수 있습니다.
           </p>
-<div aria-label="Use case navigation" class="usecase-nav">
-<button class="active" data-target="case-1">01 · 놓친 전화 대신 받기</button>
-<button data-target="case-2">02 · 예약·문의 확인하기</button>
-<button data-target="case-3">03 · 중요한 통화만 연결하기</button>
-</div>
-</aside>
-<div class="usecase-cards">
-<article class="usecase-card reveal" data-case="0" id="case-1">
-<div>
-<div class="usecase-kicker">
-<span>01 · MISSED CALL</span>
-<span class="status"><span class="pulse-dot"></span> CallX answering</span>
-</div>
-<h3>일하는 중 걸려온 전화를<br/>놓치지 않게.</h3>
-</div>
-<div class="scenario-visual">
-<div class="scenario-content">
-<div class="scenario-chip">작업 중 · 전화 수신</div>
-<div class="scenario-result">
-<strong>CallX가 대신 확인했습니다.</strong>
-<p>“오늘 저녁 방문 견적 가능 여부를 문의했습니다. 연락 가능한 시간도 함께 남겼습니다.”</p>
-</div>
-</div>
-</div>
-<div class="usecase-bottom">
-<div class="mini-step"><small>Situation</small><p>손을 쓸 수 없는 작업 중 전화가 옴</p></div>
-<div class="mini-step"><small>CallX action</small><p>용건과 필요한 조건을 대신 확인</p></div>
-<div class="mini-step"><small>Result</small><p>작업 후 핵심 내용만 확인</p></div>
-</div>
-</article>
-<article class="usecase-card reveal" data-case="1" id="case-2">
-<div>
-<div class="usecase-kicker">
-<span>02 · RESERVATION</span>
-<span class="status"><span class="pulse-dot"></span> Checking</span>
-</div>
-<h3>전화로만 가능한 문의도<br/>직접 기다리지 않게.</h3>
-</div>
-<div class="scenario-visual">
-<div class="scenario-content">
-<div class="scenario-chip">병원 예약 · 일정 확인</div>
-<div class="scenario-result">
-<strong>예약 가능 시간 확인 완료</strong>
-<p>“화요일 18:30 또는 목요일 17:00 예약 가능. 사용자가 선택하면 확정 단계로 이동합니다.”</p>
-</div>
-</div>
-</div>
-<div class="usecase-bottom">
-<div class="mini-step"><small>Situation</small><p>업무 중 병원에 전화해야 함</p></div>
-<div class="mini-step"><small>CallX action</small><p>가능 시간과 조건을 대신 문의</p></div>
-<div class="mini-step"><small>Result</small><p>선택할 수 있는 답만 전달</p></div>
-</div>
-</article>
-<article class="usecase-card reveal" data-case="2" id="case-3">
-<div>
-<div class="usecase-kicker">
-<span>03 · SCREENING</span>
-<span class="status"><span class="pulse-dot"></span> Handled</span>
-</div>
-<h3>모든 전화를 받을 필요 없이<br/>중요한 전화만 연결.</h3>
-</div>
-<div class="scenario-visual">
-<div class="scenario-content">
-<div class="scenario-chip">중요도 확인 · 연결 판단</div>
-<div class="scenario-result">
-<strong>연결이 필요한 통화로 판단했습니다.</strong>
-<p>“오늘 안에 확정이 필요한 계약 건입니다. 지금 연결할까요?”</p>
-</div>
-</div>
-</div>
-<div class="usecase-bottom">
-<div class="mini-step"><small>Situation</small><p>반복 문의와 중요한 전화가 섞여 들어옴</p></div>
-<div class="mini-step"><small>CallX action</small><p>먼저 용건을 확인하고 중요도 판단</p></div>
-<div class="mini-step"><small>Result</small><p>필요한 통화만 사용자에게 연결</p></div>
-</div>
-</article>
-</div>
-</div>
-</section>
-<section class="survey" id="survey">
-<div class="container survey-shell">
-<div class="survey-top reveal"><div class="section-badge-callx">Quick check</div>
-<div class="eyebrow">Quick check</div>
-<h2>이런 전화라면<br/>CallX에게 맡기고 싶나요?</h2>
-<p>3개 문항만 답하면 됩니다. 조사 화면이 아니라 서비스 경험의 마지막 단계처럼 가볍게 구성했습니다.</p>
-</div>
-<div class="survey-card reveal">
-<div class="survey-progress">
-<span id="progressText">1 / 3</span>
-<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
-</div>
-<div class="question active" data-question="0">
-<h3>어떤 상황에서 가장 필요할 것 같나요?</h3>
-<div class="options">
-<button class="option">일하거나 회의 중일 때</button>
-<button class="option">예약·문의 전화를 해야 할 때</button>
-<button class="option">반복적인 전화를 많이 받을 때</button>
-<button class="option">가족의 전화를 대신 챙겨야 할 때</button>
-</div>
-</div>
-<div class="question" data-question="1">
-<h3>CallX가 어디까지 처리해주면 좋을까요?</h3>
-<div class="options">
-<button class="option">용건 확인까지만</button>
-<button class="option">질문·답변까지 대신</button>
-<button class="option">예약·일정 확인까지</button>
-<button class="option">상황에 따라 알아서 처리</button>
-</div>
-</div>
-<div class="question" data-question="2">
-<h3>실제로 제공된다면 사용해보고 싶나요?</h3>
-<div class="options">
-<button class="option">꼭 써보고 싶다</button>
-<button class="option">한번 체험해보고 싶다</button>
-<button class="option">상황에 따라 쓸 것 같다</button>
-<button class="option">아직 잘 모르겠다</button>
-</div>
-</div>
-<div class="survey-actions">
-<button class="btn btn-secondary" disabled="" id="prevBtn" type="button">이전</button>
-<button class="btn btn-primary" id="nextBtn" type="button">다음</button>
-</div>
-</div>
-</div>
-</section>
-<section class="callx-faq" id="faq">
-<div class="container">
-<div class="faq-head">
-<div class="section-badge-callx">FAQ</div>
-<h2>CallX가 궁금하다면.<span>핵심만 짧게 답했습니다.</span></h2>
-</div>
-<div class="faq-grid">
-<div class="faq-item open">
-<button class="faq-question" type="button">
-<span>새로운 통화 앱을 배워야 하나요?</span><b>+</b>
-</button>
-<div class="faq-answer">아니요. CallX는 별도의 복잡한 사용법보다 평소 전화 흐름 안에서 사용자의 일을 줄이는 방향을 전제로 합니다.</div>
-</div>
-<div class="faq-item">
-<button class="faq-question" type="button">
-<span>CallX가 모든 전화를 대신하나요?</span><b>+</b>
-</button>
-<div class="faq-answer">아닙니다. 원하는 상황에 따라 대신 받기, 예약·문의, 중요한 통화 선별 등 개입 범위를 다르게 설정하는 구조입니다.</div>
-</div>
-<div class="faq-item">
-<button class="faq-question" type="button">
-<span>필요하면 제가 직접 이어받을 수 있나요?</span><b>+</b>
-</button>
-<div class="faq-answer">네. CallX가 먼저 용건을 확인한 뒤 지금 사용자가 직접 받아야 하는 전화라면 이어받는 흐름을 고려할 수 있습니다.</div>
-</div>
-<div class="faq-item">
-<button class="faq-question" type="button">
-<span>프랑스어로 바뀌어도 화면이 유지되나요?</span><b>+</b>
-</button>
-<div class="faq-answer">현재 구조는 한국어보다 문장이 길어질 수 있는 프랑스어 전환을 고려해 고정 너비와 강제 줄바꿈을 최소화했습니다.</div>
-</div>
-</div>
-</div>
-</section><section class="final-cta" id="final">
-<div class="container final-cta-inner">
-<div class="reveal">
-<div class="eyebrow">CallX</div>
-<h2>전화는 그대로. 당신의 시간은 더 자유롭게.</h2>
-</div>
-<div class="final-side reveal">
-<p>CallX가 대신할 수 있는 전화부터 시작해보세요. 필요한 순간에는 언제든 직접 이어받을 수 있습니다.</p>
-<a class="btn btn-primary" data-event="final_cta_click" href="#survey">사전등록하기</a>
-</div>
-</div>
-</section>
-</main>
-<footer class="footer">
-<div class="container footer-inner">
-<span>© 2026 CallX. Concept prototype.</span>
-<span>KR / FR · Privacy · Terms</span>
-</div>
-</footer>
-<div aria-hidden="true" class="mobile-sticky" id="mobileSticky">
-<small>전화는 그대로, 일은 줄어들게.</small>
-<a class="btn btn-primary" href="#survey">시작하기</a>
-</div>
-<script>
-    (() => {
-      // Lightweight reveal
-      const revealEls = [...document.querySelectorAll('.reveal')];
 
-      if ('IntersectionObserver' in window) {
-        const revealObserver = new IntersectionObserver((entries, obs) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-              obs.unobserve(entry.target);
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#survey" data-i18n="heroCta">이 기능, 필요할지 알려주세요</a>
+            <a class="btn btn-secondary" href="#how" data-i18n="heroSecondary">어떻게 작동하는지 보기</a>
+            <p class="hero-note" data-i18n="heroNote">CALL X는 현재 고객 반응을 확인하기 위한 컨셉 프로토타입입니다.</p>
+          </div>
+
+          <div class="hero-zeros">
+            <div>
+              <b>1</b>
+              <span data-i18n="zero1">위험 신호 감지</span>
+            </div>
+            <div>
+              <b>1</b>
+              <span data-i18n="zero2">보호자 알림</span>
+            </div>
+            <div>
+              <b>+</b>
+              <span data-i18n="zero3">필요 시 통화 개입</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-side reveal">
+          <div class="video-shell" aria-label="CALL X hero video">
+            <div class="video-fallback" id="videoFallback" data-i18n="videoFallback">Hero video area</div>
+            <video id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.webp"
+              data-src-desktop="assets/hero-desktop.mp4"
+              data-src-mobile="assets/hero-mobile.mp4"></video>
+            <div class="video-veil"></div>
+
+            <div class="risk-toast">
+              <div class="risk-icon">!</div>
+              <div>
+                <strong data-i18n="riskToastTitle">위험 가능성이 있는 전화가 감지됐습니다.</strong>
+                <p data-i18n="riskToastBody">보호 대상자의 통화를 확인하고 필요하면 함께 참여할 수 있습니다.</p>
+              </div>
+              <span class="risk-state"><i></i><span data-i18n="riskToastState">보호자 알림</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 PROBLEM -->
+    <section class="section" id="problem">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow" data-i18n="problemEyebrow">The moment before you know</div>
+            <h2 data-i18n="problemTitle">내가 옆에 없을 때도, 전화는 먼저 걸려옵니다.</h2>
+          </div>
+          <p data-i18n="problemDesc">
+            아이는 모르는 번호를 구분하기 어렵고, 시니어는 정상적인 기관 전화처럼 꾸민 사기 전화를 마주할 수 있습니다.
+            보호자가 뒤늦게 알게 되는 시간을 줄이는 것이 CALL X의 출발점입니다.
+          </p>
+        </div>
+
+        <div class="problem-grid">
+          <article class="problem-card reveal">
+            <div class="problem-kicker">
+              <span data-i18n="kidKicker">KIDS · UNKNOWN NUMBER</span>
+              <span data-i18n="kidState">보호자 부재</span>
+            </div>
+            <div class="problem-visual">
+              <img class="problem-photo" src="assets/kid-unknown-call.png" alt="모르는 번호가 아이에게 걸려왔을 때 보호자에게 알림이 전달되는 화면" loading="lazy" decoding="async" />
+            </div>
+            <div>
+              <h3 data-i18n="kidTitle">모르는 번호가 아이에게 걸려왔을 때</h3>
+              <p data-i18n="kidDesc">위험·미등록 번호를 보호자가 알 수 있도록 먼저 신호를 보냅니다.</p>
+            </div>
+          </article>
+
+          <article class="problem-card reveal">
+            <div class="problem-kicker">
+              <span data-i18n="seniorKicker">SENIOR · RISKY CALL</span>
+              <span data-i18n="seniorState">통화 시작</span>
+            </div>
+            <div class="problem-visual">
+              <img class="problem-photo" src="assets/senior-risk-call.png" alt="수상한 전화가 부모님에게 걸려왔을 때 보호자에게 알림이 전달되는 화면" loading="lazy" decoding="async" />
+            </div>
+            <div>
+              <h3 data-i18n="seniorTitle">수상한 전화가 부모님에게 걸려왔을 때</h3>
+              <p data-i18n="seniorDesc">위험 번호이거나 통화 중 보이스피싱 신호가 감지되면 보호자가 상황을 놓치지 않게 합니다.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 HOW -->
+    <section class="section section-soft" id="how">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow" data-i18n="howEyebrow">How CALL X works</div>
+            <h2 data-i18n="howTitle">위험 신호부터 보호자 개입까지, 흐름은 단순하게.</h2>
+          </div>
+          <p data-i18n="howDesc">
+            모든 전화를 보호자가 감시하는 방식이 아니라, 위험 신호가 있는 순간에만 보호자에게 필요한 정보를 전달하는 방향입니다.
+          </p>
+        </div>
+
+        <div class="how-panel">
+          <div class="how-grid">
+            <article class="how-step reveal">
+              <span class="how-num">01</span>
+              <div class="how-icon">☎</div>
+              <h3 data-i18n="how1Title">전화가 옵니다</h3>
+              <p data-i18n="how1Desc">키즈·시니어에게 외부 전화가 수신됩니다.</p>
+            </article>
+
+            <article class="how-step reveal">
+              <span class="how-num">02</span>
+              <div class="how-icon">X</div>
+              <h3 data-i18n="how2Title">CALL X가 위험 신호를 확인합니다</h3>
+              <p data-i18n="how2Desc">미등록·위험 번호 또는 통화 중 위험 신호를 확인합니다.</p>
+            </article>
+
+            <article class="how-step reveal">
+              <span class="how-num">03</span>
+              <div class="how-icon">!</div>
+              <h3 data-i18n="how3Title">보호자에게 알립니다</h3>
+              <p data-i18n="how3Desc">지금 확인해야 하는 전화인지 보호자가 판단할 수 있게 합니다.</p>
+            </article>
+
+            <article class="how-step reveal">
+              <span class="how-num">04</span>
+              <div class="how-icon">+</div>
+              <h3 data-i18n="how4Title">필요하면 통화에 함께 들어갑니다</h3>
+              <p data-i18n="how4Desc">위험도가 높다면 보호자가 통화에 참여하는 시나리오까지 고려합니다.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 SURVEY -->
+    <section class="section survey" id="survey">
+      <div class="container survey-shell">
+        <div class="survey-intro reveal">
+          <div class="eyebrow" data-i18n="surveyEyebrow">Quick check · about 1 minute</div>
+          <h2 data-i18n="surveyTitle">이런 보호 기능, 실제로 필요할까요?</h2>
+          <p data-i18n="surveyDesc">
+            최대 4개의 짧은 질문으로 어떤 가족에게, 어느 정도의 보호가 필요한지 확인하고 있습니다.
+          </p>
+          <div class="survey-meta">
+            <span class="meta-chip" data-i18n="surveyMeta1">최대 4문항</span>
+            <span class="meta-chip" data-i18n="surveyMeta2">No sign-up</span>
+            <span class="meta-chip" data-i18n="surveyMeta3">KR / FR</span>
+          </div>
+        </div>
+
+        <div class="survey-card reveal">
+          <form id="surveyForm" novalidate>
+            <label class="hp" aria-hidden="true">
+              Website
+              <input type="text" id="website" name="website" autocomplete="off" tabindex="-1" />
+            </label>
+
+            <div class="survey-progress">
+              <span id="progressText">1 / 4</span>
+              <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+            </div>
+
+            <div id="questionWrap">
+              <!-- Q1 -->
+              <section class="survey-question active" data-step="target">
+                <h3 data-i18n="q1Title">누구를 위해 가장 필요하다고 느끼시나요?</h3>
+                <p class="survey-help" data-i18n="q1Help">보호가 필요한 대상을 먼저 선택해주세요.</p>
+
+                <div class="option-grid" data-group="target">
+                  <button type="button" class="option" data-value="kid" data-i18n="q1Kid">아이</button>
+                  <button type="button" class="option" data-value="senior" data-i18n="q1Senior">부모님 등 시니어</button>
+                  <button type="button" class="option" data-value="self" data-i18n="q1Self">나 자신</button>
+                </div>
+
+                <div class="subquestion" id="targetAgeWrap">
+                  <h4 data-i18n="q1AgeTitle">대상의 연령대를 알려주세요.</h4>
+                  <div class="option-grid" id="targetAgeOptions" data-group="target_age"></div>
+                </div>
+              </section>
+
+              <!-- Q2 -->
+              <section class="survey-question" data-step="intervention">
+                <h3 data-i18n="q2Title">위험한 전화라면 어느 정도까지 개입되길 원하시나요?</h3>
+                <p class="survey-help" data-i18n="q2Help">가장 가까운 수준 하나를 골라주세요.</p>
+
+                <div class="option-grid" data-group="intervention">
+                  <button type="button" class="option" data-value="alert" data-i18n="q2Alert">위험하다는 알림만 받고 싶다</button>
+                  <button type="button" class="option" data-value="review" data-i18n="q2Review">AI가 먼저 확인하고 결과를 받고 싶다</button>
+                  <button type="button" class="option" data-value="join" data-i18n="q2Join">위험하면 보호자가 통화에 참여하고 싶다</button>
+                  <button type="button" class="option" data-value="adaptive" data-i18n="q2Adaptive">상황에 따라 알림·개입 수준이 달라지면 좋겠다</button>
+                </div>
+              </section>
+
+              <!-- Q3 conditional -->
+              <section class="survey-question" data-step="respondent_age">
+                <h3 data-i18n="q3Title">응답하시는 분의 연령대는 어떻게 되나요?</h3>
+                <p class="survey-help" data-i18n="q3Help">보호 대상과 응답자가 다른 경우에만 확인합니다.</p>
+
+                <div class="option-grid" data-group="respondent_age">
+                  <button type="button" class="option" data-value="20s" data-i18n="age20">20대</button>
+                  <button type="button" class="option" data-value="30s" data-i18n="age30">30대</button>
+                  <button type="button" class="option" data-value="40s" data-i18n="age40">40대</button>
+                  <button type="button" class="option" data-value="50s" data-i18n="age50">50대</button>
+                  <button type="button" class="option" data-value="60plus" data-i18n="age60">60대 이상</button>
+                </div>
+              </section>
+
+              <!-- Q4 -->
+              <section class="survey-question" data-step="intent">
+                <h3 data-i18n="q4Title">실제로 제공된다면 사용해보고 싶으신가요?</h3>
+                <p class="survey-help" data-i18n="q4Help">현재 느낌에 가장 가까운 답을 선택해주세요.</p>
+
+                <div class="option-grid" data-group="intent">
+                  <button type="button" class="option" data-value="definitely" data-i18n="q4Definitely">꼭 사용해보고 싶다</button>
+                  <button type="button" class="option" data-value="trial" data-i18n="q4Trial">한번 체험해보고 싶다</button>
+                  <button type="button" class="option" data-value="situational" data-i18n="q4Situational">상황에 따라 사용할 것 같다</button>
+                  <button type="button" class="option" data-value="unsure" data-i18n="q4Unsure">아직 잘 모르겠다</button>
+                </div>
+              </section>
+            </div>
+
+            <div class="survey-actions" id="surveyActions">
+              <button type="button" class="btn btn-secondary" id="prevBtn" disabled data-i18n="prev">이전</button>
+              <button type="button" class="btn btn-primary" id="nextBtn" data-i18n="next">다음</button>
+            </div>
+            <p class="survey-msg" id="surveyMsg" role="alert"></p>
+          </form>
+
+          <div class="survey-success" id="surveySuccess">
+            <h3 data-i18n="successTitle">응답이 저장되었습니다.</h3>
+            <p id="successBody" data-i18n="successBody">CALL X가 어떤 보호부터 시작해야 할지 판단하는 데 활용하겠습니다.</p>
+
+            <div class="survey-summary" id="surveySummary"></div>
+
+            <div style="margin-top:20px">
+              <button type="button" class="btn btn-secondary" id="resetSurvey" data-i18n="reset">다시 응답하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 USE CASES -->
+    <section class="section" id="usecases">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow" data-i18n="casesEyebrow">Three protection moments</div>
+            <h2 data-i18n="casesTitle">보호해야 하는 순간은 세 가지로 나눠볼 수 있습니다.</h2>
+          </div>
+          <p data-i18n="casesDesc">모르는 번호를 받기 전부터, 이미 시작된 통화에 보호자가 들어가는 순간까지 단계적으로 생각했습니다.</p>
+        </div>
+
+        <div class="usecase-grid">
+          <article class="usecase-card reveal">
+            <div class="usecase-top">
+              <span>01 · KIDS</span>
+              <span class="status-pill"><i></i><span data-i18n="case1Pill">Unknown call</span></span>
+            </div>
+            <div class="usecase-visual">
+              <div class="case-flow">
+                <div class="case-node" data-i18n="case1Node1">미등록 번호</div>
+                <div class="case-arrow">→</div>
+                <div class="case-node" data-i18n="case1Node2">보호자 알림</div>
+              </div>
+            </div>
+            <h3 data-i18n="case1Title">모르는 번호가 아이에게 전화했을 때</h3>
+            <p data-i18n="case1Desc">위험·미등록 번호의 수신 사실을 보호자에게 알려 아이가 혼자 판단해야 하는 상황을 줄입니다.</p>
+          </article>
+
+          <article class="usecase-card reveal">
+            <div class="usecase-top">
+              <span>02 · SENIOR</span>
+              <span class="status-pill"><i></i><span data-i18n="case2Pill">Risk number</span></span>
+            </div>
+            <div class="usecase-visual">
+              <div class="case-flow">
+                <div class="case-node" data-i18n="case2Node1">위험 번호</div>
+                <div class="case-arrow">→</div>
+                <div class="case-node" data-i18n="case2Node2">즉시 알림</div>
+              </div>
+            </div>
+            <h3 data-i18n="case2Title">위험 번호가 부모님에게 전화했을 때</h3>
+            <p data-i18n="case2Desc">사기 가능성이 높은 전화의 수신을 보호자가 빠르게 인지하고 필요한 조치를 판단할 수 있게 합니다.</p>
+          </article>
+
+          <article class="usecase-card reveal">
+            <div class="usecase-top">
+              <span>03 · SENIOR / IN-CALL</span>
+              <span class="status-pill"><i></i><span data-i18n="case3Pill">Voice risk</span></span>
+            </div>
+            <div class="usecase-visual">
+              <div class="case-flow">
+                <div class="case-node" data-i18n="case3Node1">통화 중 위험 탐지</div>
+                <div class="case-arrow">→</div>
+                <div class="case-node" data-i18n="case3Node2">보호자 참여</div>
+              </div>
+            </div>
+            <h3 data-i18n="case3Title">통화 중 보이스피싱 위험이 감지됐을 때</h3>
+            <p data-i18n="case3Desc">위험 신호를 보호자에게 알리고, 필요하다면 제3자로 통화에 참여하는 흐름까지 확장합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 TRUST -->
+    <section class="section section-soft" id="trust">
+      <div class="container trust-grid">
+        <div class="trust-copy reveal">
+          <div class="eyebrow" data-i18n="trustEyebrow">Protection, not surveillance</div>
+          <h2 data-i18n="trustTitle">가족을 지키는 기능일수록, 개입 기준은 분명해야 합니다.</h2>
+          <p data-i18n="trustDesc">CALL X는 모든 통화를 들여다보는 서비스가 아니라, 위험 가능성이 있는 순간에 보호자에게 필요한 신호를 전달하는 방향을 전제로 합니다.</p>
+        </div>
+
+        <div class="trust-list">
+          <article class="trust-item reveal">
+            <span class="trust-index">01</span>
+            <div>
+              <h3 data-i18n="trust1Title">위험 신호가 있을 때 알립니다</h3>
+              <p data-i18n="trust1Desc">보호자가 모든 전화를 실시간으로 확인해야 하는 구조보다, 확인이 필요한 순간을 선별하는 방향입니다.</p>
+            </div>
+          </article>
+
+          <article class="trust-item reveal">
+            <span class="trust-index">02</span>
+            <div>
+              <h3 data-i18n="trust2Title">알림과 통화 개입은 구분합니다</h3>
+              <p data-i18n="trust2Desc">단순 알림부터 보호자의 통화 참여까지 서로 다른 보호 수준으로 설계할 수 있습니다.</p>
+            </div>
+          </article>
+
+          <article class="trust-item reveal">
+            <span class="trust-index">03</span>
+            <div>
+              <h3 data-i18n="trust3Title">최종 판단은 보호자가 합니다</h3>
+              <p data-i18n="trust3Desc">CALL X가 위험 가능성을 알려도, 실제 개입 여부는 사용자가 선택하는 구조를 기본으로 합니다.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 FAQ -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="faq-head">
+          <div class="eyebrow">FAQ</div>
+          <h2 data-i18n="faqTitle">CALL X가 궁금하다면.</h2>
+        </div>
+
+        <div class="faq-grid" style="margin-top:28px">
+          <div class="faq-item open">
+            <button class="faq-question" type="button">
+              <span data-i18n="faq1Q">모든 전화 내용을 보호자가 보게 되나요?</span><b>+</b>
+            </button>
+            <div class="faq-answer" data-i18n="faq1A">현재 컨셉은 모든 통화를 상시 공유하는 방식이 아니라, 위험 가능성이 있는 전화에서 보호자에게 필요한 신호를 전달하는 방향입니다.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span data-i18n="faq2Q">알림만 받고 통화에는 개입하지 않을 수도 있나요?</span><b>+</b>
+            </button>
+            <div class="faq-answer" data-i18n="faq2A">네. 단순 알림과 통화 참여는 서로 다른 개입 단계로 설계할 수 있으며, 설문에서도 선호 수준을 따로 확인합니다.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span data-i18n="faq3Q">아이와 시니어에게 같은 방식으로 동작하나요?</span><b>+</b>
+            </button>
+            <div class="faq-answer" data-i18n="faq3A">핵심은 위험전화 알림이지만, 키즈는 미등록·위험 번호 중심, 시니어는 위험 번호와 통화 중 보이스피싱 신호까지 확장하는 시나리오를 고려합니다.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span data-i18n="faq4Q">지금 바로 사용할 수 있는 서비스인가요?</span><b>+</b>
+            </button>
+            <div class="faq-answer" data-i18n="faq4A">아직은 고객 반응과 필요한 보호 수준을 확인하기 위한 컨셉 검증 단계입니다.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 FINAL CTA -->
+    <section class="final-cta" id="final">
+      <div class="container">
+        <div class="final-box">
+          <div class="reveal">
+            <div class="eyebrow">CALL X</div>
+            <h2 data-i18n="finalTitle">위험한 전화를, 가족 혼자 판단하게 두지 않도록.</h2>
+          </div>
+          <div class="final-side reveal">
+            <p data-i18n="finalDesc">CALL X가 어떤 가족과 어떤 상황부터 보호해야 할지, 1분 설문으로 의견을 남겨주세요.</p>
+            <a class="btn btn-primary" href="#survey" data-i18n="finalCta">설문 참여하기</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© 2026 CALL X. Concept prototype.</span>
+      <span data-i18n="footerRight">KR / FR · Customer research prototype</span>
+    </div>
+  </footer>
+
+  <div class="mobile-sticky" id="mobileSticky" aria-hidden="true">
+    <small data-i18n="stickyText">가족의 위험전화 보호, 필요할까요?</small>
+    <a class="btn btn-primary" href="#survey" data-i18n="stickyCta">1분 설문</a>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const I18N = {
+      ko: {
+        metaTitle: 'CALL X — 가족에게 걸려온 수상한 전화, 혼자 판단하게 두지 않도록',
+        metaDescription: '키즈·시니어에게 위험한 전화가 걸려오거나 통화 중 위험 신호가 감지되면 보호자에게 알리고, 필요한 순간에는 함께 개입할 수 있는 CALL X 컨셉입니다.',
+        navHow:'어떻게 보호하나요', navSurvey:'빠른 설문', navCases:'사용 장면', navCta:'의견 남기기',
+        heroEyebrow:'CALL X · Family Call Protection',
+        heroTitle1:'가족에게 걸려온 수상한 전화,', heroTitle2:'혼자 판단하게 두지 않도록.',
+        heroDesc:'키즈·시니어에게 위험한 전화가 걸려오거나 통화 중 위험 신호가 감지되면 보호자에게 알리고, 필요한 순간에는 함께 개입할 수 있습니다.',
+        heroCta:'이 기능, 필요할지 알려주세요', heroSecondary:'어떻게 작동하는지 보기',
+        heroNote:'CALL X는 현재 고객 반응을 확인하기 위한 컨셉 프로토타입입니다.',
+        zero1:'위험 신호 감지', zero2:'보호자 알림', zero3:'필요 시 통화 개입',
+        videoFallback:'Hero video area',
+        riskToastTitle:'위험 가능성이 있는 전화가 감지됐습니다.',
+        riskToastBody:'보호 대상자의 통화를 확인하고 필요하면 함께 참여할 수 있습니다.',
+        riskToastState:'보호자 알림',
+        problemEyebrow:'The moment before you know',
+        problemTitle:'내가 옆에 없을 때도, 전화는 먼저 걸려옵니다.',
+        problemDesc:'아이는 모르는 번호를 구분하기 어렵고, 시니어는 정상적인 기관 전화처럼 꾸민 사기 전화를 마주할 수 있습니다. 보호자가 뒤늦게 알게 되는 시간을 줄이는 것이 CALL X의 출발점입니다.',
+        kidKicker:'KIDS · UNKNOWN NUMBER', kidState:'보호자 부재',
+        kidTitle:'모르는 번호가 아이에게 걸려왔을 때', kidDesc:'위험·미등록 번호를 보호자가 알 수 있도록 먼저 신호를 보냅니다.',
+        seniorKicker:'SENIOR · RISKY CALL', seniorState:'통화 시작',
+        seniorTitle:'수상한 전화가 부모님에게 걸려왔을 때', seniorDesc:'위험 번호이거나 통화 중 보이스피싱 신호가 감지되면 보호자가 상황을 놓치지 않게 합니다.',
+        howEyebrow:'How CALL X works', howTitle:'위험 신호부터 보호자 개입까지, 흐름은 단순하게.',
+        howDesc:'모든 전화를 보호자가 감시하는 방식이 아니라, 위험 신호가 있는 순간에만 보호자에게 필요한 정보를 전달하는 방향입니다.',
+        how1Title:'전화가 옵니다', how1Desc:'키즈·시니어에게 외부 전화가 수신됩니다.',
+        how2Title:'CALL X가 위험 신호를 확인합니다', how2Desc:'미등록·위험 번호 또는 통화 중 위험 신호를 확인합니다.',
+        how3Title:'보호자에게 알립니다', how3Desc:'지금 확인해야 하는 전화인지 보호자가 판단할 수 있게 합니다.',
+        how4Title:'필요하면 통화에 함께 들어갑니다', how4Desc:'위험도가 높다면 보호자가 통화에 참여하는 시나리오까지 고려합니다.',
+        surveyEyebrow:'Quick check · about 1 minute', surveyTitle:'이런 보호 기능, 실제로 필요할까요?',
+        surveyDesc:'최대 4개의 짧은 질문으로 어떤 가족에게, 어느 정도의 보호가 필요한지 확인하고 있습니다.',
+        surveyMeta1:'최대 4문항', surveyMeta2:'No sign-up', surveyMeta3:'KR / FR',
+        q1Title:'누구를 위해 가장 필요하다고 느끼시나요?', q1Help:'보호가 필요한 대상을 먼저 선택해주세요.',
+        q1Kid:'아이', q1Senior:'부모님 등 시니어', q1Self:'나 자신', q1AgeTitle:'대상의 연령대를 알려주세요.',
+        q2Title:'위험한 전화라면 어느 정도까지 개입되길 원하시나요?', q2Help:'가장 가까운 수준 하나를 골라주세요.',
+        q2Alert:'위험하다는 알림만 받고 싶다', q2Review:'AI가 먼저 확인하고 결과를 받고 싶다',
+        q2Join:'위험하면 보호자가 통화에 참여하고 싶다', q2Adaptive:'상황에 따라 알림·개입 수준이 달라지면 좋겠다',
+        q3Title:'응답하시는 분의 연령대는 어떻게 되나요?', q3Help:'보호 대상과 응답자가 다른 경우에만 확인합니다.',
+        age20:'20대', age30:'30대', age40:'40대', age50:'50대', age60:'60대 이상',
+        q4Title:'실제로 제공된다면 사용해보고 싶으신가요?', q4Help:'현재 느낌에 가장 가까운 답을 선택해주세요.',
+        q4Definitely:'꼭 사용해보고 싶다', q4Trial:'한번 체험해보고 싶다', q4Situational:'상황에 따라 사용할 것 같다', q4Unsure:'아직 잘 모르겠다',
+        prev:'이전', next:'다음', submit:'응답 보내기', sending:'저장 중…',
+        needAnswer:'답변을 하나 선택해주세요.', needTargetAge:'대상의 연령대를 선택해주세요.',
+        saveError:'응답을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
+        localOnly:'로컬 미리보기에서는 서버에 저장되지 않습니다. Vercel 배포 후 /api/survey로 저장됩니다.',
+        successTitle:'응답이 저장되었습니다.', successBody:'CALL X가 어떤 보호부터 시작해야 할지 판단하는 데 활용하겠습니다.',
+        localSuccessTitle:'미리보기 응답을 확인했습니다.', localSuccessBody:'현재는 로컬 미리보기라 서버에는 저장되지 않았습니다.',
+        reset:'다시 응답하기',
+        summaryTarget:'보호 대상', summaryTargetAge:'대상 연령', summaryIntervention:'개입 수준', summaryRespondent:'응답자 연령', summaryIntent:'사용 의향',
+        targetKid:'아이', targetSenior:'시니어', targetSelf:'본인',
+        interventionAlert:'알림만', interventionReview:'AI 확인 후 결과', interventionJoin:'보호자 통화 참여', interventionAdaptive:'상황별 조정',
+        intentDefinitely:'꼭 사용', intentTrial:'체험 의향', intentSituational:'상황별 사용', intentUnsure:'잘 모르겠음',
+        casesEyebrow:'Three protection moments', casesTitle:'보호해야 하는 순간은 세 가지로 나눠볼 수 있습니다.',
+        casesDesc:'모르는 번호를 받기 전부터, 이미 시작된 통화에 보호자가 들어가는 순간까지 단계적으로 생각했습니다.',
+        case1Pill:'Unknown call', case1Node1:'미등록 번호', case1Node2:'보호자 알림',
+        case1Title:'모르는 번호가 아이에게 전화했을 때', case1Desc:'위험·미등록 번호의 수신 사실을 보호자에게 알려 아이가 혼자 판단해야 하는 상황을 줄입니다.',
+        case2Pill:'Risk number', case2Node1:'위험 번호', case2Node2:'즉시 알림',
+        case2Title:'위험 번호가 부모님에게 전화했을 때', case2Desc:'사기 가능성이 높은 전화의 수신을 보호자가 빠르게 인지하고 필요한 조치를 판단할 수 있게 합니다.',
+        case3Pill:'Voice risk', case3Node1:'통화 중 위험 탐지', case3Node2:'보호자 참여',
+        case3Title:'통화 중 보이스피싱 위험이 감지됐을 때', case3Desc:'위험 신호를 보호자에게 알리고, 필요하다면 제3자로 통화에 참여하는 흐름까지 확장합니다.',
+        trustEyebrow:'Protection, not surveillance', trustTitle:'가족을 지키는 기능일수록, 개입 기준은 분명해야 합니다.',
+        trustDesc:'CALL X는 모든 통화를 들여다보는 서비스가 아니라, 위험 가능성이 있는 순간에 보호자에게 필요한 신호를 전달하는 방향을 전제로 합니다.',
+        trust1Title:'위험 신호가 있을 때 알립니다', trust1Desc:'보호자가 모든 전화를 실시간으로 확인해야 하는 구조보다, 확인이 필요한 순간을 선별하는 방향입니다.',
+        trust2Title:'알림과 통화 개입은 구분합니다', trust2Desc:'단순 알림부터 보호자의 통화 참여까지 서로 다른 보호 수준으로 설계할 수 있습니다.',
+        trust3Title:'최종 판단은 보호자가 합니다', trust3Desc:'CALL X가 위험 가능성을 알려도, 실제 개입 여부는 사용자가 선택하는 구조를 기본으로 합니다.',
+        faqTitle:'CALL X가 궁금하다면.',
+        faq1Q:'모든 전화 내용을 보호자가 보게 되나요?', faq1A:'현재 컨셉은 모든 통화를 상시 공유하는 방식이 아니라, 위험 가능성이 있는 전화에서 보호자에게 필요한 신호를 전달하는 방향입니다.',
+        faq2Q:'알림만 받고 통화에는 개입하지 않을 수도 있나요?', faq2A:'네. 단순 알림과 통화 참여는 서로 다른 개입 단계로 설계할 수 있으며, 설문에서도 선호 수준을 따로 확인합니다.',
+        faq3Q:'아이와 시니어에게 같은 방식으로 동작하나요?', faq3A:'핵심은 위험전화 알림이지만, 키즈는 미등록·위험 번호 중심, 시니어는 위험 번호와 통화 중 보이스피싱 신호까지 확장하는 시나리오를 고려합니다.',
+        faq4Q:'지금 바로 사용할 수 있는 서비스인가요?', faq4A:'아직은 고객 반응과 필요한 보호 수준을 확인하기 위한 컨셉 검증 단계입니다.',
+        finalTitle:'위험한 전화를, 가족 혼자 판단하게 두지 않도록.',
+        finalDesc:'CALL X가 어떤 가족과 어떤 상황부터 보호해야 할지, 1분 설문으로 의견을 남겨주세요.',
+        finalCta:'설문 참여하기',
+        footerRight:'KR / FR · Customer research prototype',
+        stickyText:'가족의 위험전화 보호, 필요할까요?', stickyCta:'1분 설문'
+      },
+
+      fr: {
+        metaTitle:'CALL X — Pour que vos proches ne restent pas seuls face à un appel suspect',
+        metaDescription:'CALL X avertit un proche lorsqu’un enfant ou un senior reçoit un appel potentiellement risqué, et permet d’intervenir lorsque la situation le nécessite.',
+        navHow:'Comment ça protège', navSurvey:'Questionnaire', navCases:'Situations', navCta:'Donner mon avis',
+        heroEyebrow:'CALL X · Protection des appels familiaux',
+        heroTitle1:'Quand un appel suspect atteint un proche,', heroTitle2:'ne le laissez pas décider seul.',
+        heroDesc:'Lorsqu’un enfant ou un senior reçoit un appel à risque — ou qu’un signal de fraude apparaît pendant l’appel — CALL X prévient le proche référent et lui permet d’intervenir si nécessaire.',
+        heroCta:'Dites-nous si cela vous serait utile', heroSecondary:'Voir comment cela fonctionne',
+        heroNote:'CALL X est actuellement un prototype de concept destiné à mesurer l’intérêt des utilisateurs.',
+        zero1:'Détection du risque', zero2:'Alerte au proche', zero3:'Intervention si nécessaire',
+        videoFallback:'Zone vidéo Hero',
+        riskToastTitle:'Un appel potentiellement risqué a été détecté.',
+        riskToastBody:'Le proche peut vérifier la situation et rejoindre l’appel si nécessaire.',
+        riskToastState:'Alerte envoyée',
+        problemEyebrow:'Avant que vous ne le sachiez',
+        problemTitle:'Même quand vous n’êtes pas là, l’appel arrive d’abord.',
+        problemDesc:'Un enfant peut difficilement distinguer un numéro inconnu, tandis qu’un senior peut recevoir un appel frauduleux qui ressemble à celui d’un organisme légitime. CALL X vise à réduire le temps entre le risque et le moment où le proche en est informé.',
+        kidKicker:'ENFANT · NUMÉRO INCONNU', kidState:'Proche absent',
+        kidTitle:'Lorsqu’un numéro inconnu appelle un enfant', kidDesc:'CALL X signale au proche les appels provenant de numéros inconnus ou potentiellement risqués.',
+        seniorKicker:'SENIOR · APPEL À RISQUE', seniorState:'Appel en cours',
+        seniorTitle:'Lorsqu’un appel suspect arrive chez un parent senior', seniorDesc:'Si le numéro est risqué ou si des signaux de fraude vocale apparaissent pendant l’appel, le proche peut être averti.',
+        howEyebrow:'Comment fonctionne CALL X', howTitle:'Du signal de risque à l’intervention du proche, le parcours reste simple.',
+        howDesc:'L’objectif n’est pas de surveiller chaque appel, mais d’informer le proche uniquement lorsqu’un signal mérite son attention.',
+        how1Title:'L’appel arrive', how1Desc:'Un appel externe est reçu par l’enfant ou le senior.',
+        how2Title:'CALL X vérifie les signaux de risque', how2Desc:'Numéro inconnu, numéro risqué ou signaux suspects pendant l’appel.',
+        how3Title:'Le proche est averti', how3Desc:'Il reçoit les informations nécessaires pour décider s’il faut agir.',
+        how4Title:'Il peut rejoindre l’appel si nécessaire', how4Desc:'Pour les situations à haut risque, une participation du proche à l’appel peut être envisagée.',
+        surveyEyebrow:'Questionnaire rapide · environ 1 minute', surveyTitle:'Ce type de protection vous serait-il réellement utile ?',
+        surveyDesc:'Jusqu’à quatre courtes questions pour comprendre pour qui cette protection est la plus utile et jusqu’où elle devrait intervenir.',
+        surveyMeta1:'Jusqu’à 4 questions', surveyMeta2:'Sans inscription', surveyMeta3:'KR / FR',
+        q1Title:'Pour qui cette protection vous semblerait-elle la plus utile ?', q1Help:'Choisissez d’abord la personne à protéger.',
+        q1Kid:'Un enfant', q1Senior:'Un parent / senior', q1Self:'Moi-même', q1AgeTitle:'Quel est l’âge de la personne concernée ?',
+        q2Title:'Face à un appel risqué, jusqu’où souhaiteriez-vous que CALL X intervienne ?', q2Help:'Choisissez le niveau qui vous correspond le mieux.',
+        q2Alert:'Recevoir uniquement une alerte de risque', q2Review:'Laisser l’IA vérifier d’abord puis recevoir le résultat',
+        q2Join:'Pouvoir rejoindre l’appel s’il semble dangereux', q2Adaptive:'Adapter automatiquement le niveau d’alerte ou d’intervention à la situation',
+        q3Title:'Quel est votre âge ?', q3Help:'Cette question apparaît uniquement lorsque la personne protégée est quelqu’un d’autre.',
+        age20:'20–29 ans', age30:'30–39 ans', age40:'40–49 ans', age50:'50–59 ans', age60:'60 ans ou plus',
+        q4Title:'Si ce service existait, souhaiteriez-vous l’essayer ?', q4Help:'Choisissez la réponse la plus proche de votre sentiment actuel.',
+        q4Definitely:'Oui, je voudrais vraiment l’utiliser', q4Trial:'Oui, j’aimerais l’essayer au moins une fois', q4Situational:'Je pourrais l’utiliser selon les situations', q4Unsure:'Je ne sais pas encore',
+        prev:'Précédent', next:'Suivant', submit:'Envoyer mes réponses', sending:'Enregistrement…',
+        needAnswer:'Veuillez sélectionner une réponse.', needTargetAge:'Veuillez sélectionner l’âge de la personne concernée.',
+        saveError:'Impossible d’enregistrer votre réponse. Veuillez réessayer dans un instant.',
+        localOnly:'En aperçu local, les réponses ne sont pas enregistrées sur le serveur. Après déploiement sur Vercel, elles seront envoyées vers /api/survey.',
+        successTitle:'Votre réponse a bien été enregistrée.', successBody:'Elle nous aidera à déterminer quelles protections CALL X devrait prioriser.',
+        localSuccessTitle:'Réponse validée en aperçu.', localSuccessBody:'Vous êtes en aperçu local : la réponse n’a pas été enregistrée sur le serveur.',
+        reset:'Répondre à nouveau',
+        summaryTarget:'Personne protégée', summaryTargetAge:'Âge cible', summaryIntervention:'Niveau d’intervention', summaryRespondent:'Âge du répondant', summaryIntent:'Intention d’usage',
+        targetKid:'Enfant', targetSenior:'Senior', targetSelf:'Moi-même',
+        interventionAlert:'Alerte seulement', interventionReview:'Vérification IA + résultat', interventionJoin:'Participation du proche', interventionAdaptive:'Adaptatif',
+        intentDefinitely:'Très intéressé', intentTrial:'Prêt à essayer', intentSituational:'Selon la situation', intentUnsure:'Pas encore sûr',
+        casesEyebrow:'Trois moments de protection', casesTitle:'Trois moments où la protection peut faire la différence.',
+        casesDesc:'Du numéro inconnu avant même la conversation, jusqu’au moment où un proche rejoint un appel déjà en cours.',
+        case1Pill:'Numéro inconnu', case1Node1:'Numéro inconnu', case1Node2:'Alerte au proche',
+        case1Title:'Lorsqu’un numéro inconnu appelle un enfant', case1Desc:'Le proche est informé qu’un numéro inconnu ou potentiellement risqué tente de joindre l’enfant, afin de réduire les situations où il doit décider seul.',
+        case2Pill:'Numéro à risque', case2Node1:'Numéro à risque', case2Node2:'Alerte immédiate',
+        case2Title:'Lorsqu’un numéro risqué appelle un senior', case2Desc:'Le proche peut être averti rapidement d’un appel à forte probabilité de fraude et décider de la suite à donner.',
+        case3Pill:'Risque vocal', case3Node1:'Risque détecté pendant l’appel', case3Node2:'Le proche rejoint',
+        case3Title:'Lorsqu’un risque de fraude vocale est détecté pendant l’appel', case3Desc:'CALL X avertit le proche et peut aller jusqu’à permettre sa participation à l’appel en tant que tierce personne.',
+        trustEyebrow:'Protéger, pas surveiller', trustTitle:'Plus la fonction protège la famille, plus ses règles d’intervention doivent être claires.',
+        trustDesc:'CALL X n’est pas conçu pour écouter tous les appels. Le concept repose sur l’idée de transmettre au proche le bon signal lorsqu’une situation semble risquée.',
+        trust1Title:'Alerter lorsqu’un signal mérite l’attention', trust1Desc:'L’objectif est de sélectionner les moments à vérifier, plutôt que d’imposer une surveillance permanente de tous les appels.',
+        trust2Title:'Distinguer l’alerte de l’intervention', trust2Desc:'Une simple notification et la participation du proche à l’appel correspondent à des niveaux de protection différents.',
+        trust3Title:'Laisser la décision finale à l’utilisateur', trust3Desc:'Même lorsqu’un risque est signalé, l’intervention réelle reste une décision du proche.',
+        faqTitle:'Questions fréquentes sur CALL X.',
+        faq1Q:'Le proche pourra-t-il voir le contenu de tous les appels ?', faq1A:'Non. Le concept actuel vise à transmettre uniquement les signaux nécessaires lorsqu’un appel présente un risque, plutôt qu’à partager tous les appels en permanence.',
+        faq2Q:'Puis-je recevoir une alerte sans rejoindre l’appel ?', faq2A:'Oui. L’alerte seule et la participation à l’appel sont conçues comme deux niveaux d’intervention différents.',
+        faq3Q:'Le fonctionnement est-il identique pour les enfants et les seniors ?', faq3A:'Le principe d’alerte est commun, mais le scénario enfant se concentre sur les numéros inconnus ou risqués, tandis que le scénario senior peut aussi inclure la détection de signaux de fraude pendant l’appel.',
+        faq4Q:'Le service est-il déjà disponible ?', faq4A:'Pas encore. Il s’agit actuellement d’un concept destiné à mesurer l’intérêt des utilisateurs et le niveau de protection attendu.',
+        finalTitle:'Pour que vos proches ne restent pas seuls face à un appel risqué.',
+        finalDesc:'Aidez-nous à comprendre quelles familles et quelles situations CALL X devrait protéger en priorité grâce à ce questionnaire d’une minute.',
+        finalCta:'Participer au questionnaire',
+        footerRight:'KR / FR · Prototype de recherche utilisateur',
+        stickyText:'Cette protection vous serait-elle utile ?', stickyCta:'1 min'
+      }
+    };
+
+    const AGE_OPTIONS = {
+      ko: {
+        kid:[
+          ['0-6','0~6세'],
+          ['7-9','7~9세'],
+          ['10-12','10~12세'],
+          ['13plus','13세 이상']
+        ],
+        senior:[
+          ['60s','60대'],
+          ['70s','70대'],
+          ['80plus','80대 이상']
+        ],
+        self:[
+          ['20s','20대'],
+          ['30s','30대'],
+          ['40s','40대'],
+          ['50s','50대'],
+          ['60plus','60대 이상']
+        ]
+      },
+      fr: {
+        kid:[
+          ['0-6','0–6 ans'],
+          ['7-9','7–9 ans'],
+          ['10-12','10–12 ans'],
+          ['13plus','13 ans ou plus']
+        ],
+        senior:[
+          ['60s','60–69 ans'],
+          ['70s','70–79 ans'],
+          ['80plus','80 ans ou plus']
+        ],
+        self:[
+          ['20s','20–29 ans'],
+          ['30s','30–39 ans'],
+          ['40s','40–49 ans'],
+          ['50s','50–59 ans'],
+          ['60plus','60 ans ou plus']
+        ]
+      }
+    };
+
+    const state = {
+      lang:'ko',
+      current:0,
+      target:null,
+      target_age:null,
+      intervention:null,
+      respondent_age:null,
+      intent:null,
+      submitted:false
+    };
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    const getInitialLang = () => {
+      const q = new URLSearchParams(location.search).get('lang');
+      if (q === 'ko' || q === 'fr') return q;
+      const saved = localStorage.getItem('callx_lang');
+      if (saved === 'ko' || saved === 'fr') return saved;
+      return navigator.language?.toLowerCase().startsWith('fr') ? 'fr' : 'ko';
+    };
+
+    const t = (key) => I18N[state.lang][key] || I18N.ko[key] || key;
+
+    function applyLanguage(lang){
+      state.lang = lang;
+      document.documentElement.lang = lang;
+      localStorage.setItem('callx_lang', lang);
+
+      $$('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (I18N[lang][key] !== undefined) el.textContent = I18N[lang][key];
+      });
+
+      $$('[data-lang]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.lang === lang)));
+
+      document.title = t('metaTitle');
+      const meta = $('meta[name="description"]');
+      if(meta) meta.setAttribute('content', t('metaDescription'));
+
+      if(state.target) renderTargetAges();
+      if(!state.submitted) renderSurvey();
+      else renderSummary();
+    }
+
+    $$('[data-lang]').forEach(btn => btn.addEventListener('click', () => {
+      applyLanguage(btn.dataset.lang);
+      const url = new URL(location.href);
+      url.searchParams.set('lang', btn.dataset.lang);
+      history.replaceState({}, '', url);
+    }));
+
+    /* Hero video asset switch */
+    const heroVideo = $('#heroVideo');
+    const videoFallback = $('#videoFallback');
+    function loadHeroVideo(){
+      if(!heroVideo) return;
+      const mobile = matchMedia('(max-width: 767px)').matches;
+      const src = mobile ? heroVideo.dataset.srcMobile : heroVideo.dataset.srcDesktop;
+      if(heroVideo.dataset.loadedSrc === src) return;
+      heroVideo.dataset.loadedSrc = src;
+      heroVideo.src = src;
+      heroVideo.load();
+      const play = heroVideo.play();
+      if(play?.catch) play.catch(() => {});
+    }
+    heroVideo?.addEventListener('loadeddata', () => { if(videoFallback) videoFallback.style.display='none'; });
+    heroVideo?.addEventListener('error', () => { if(videoFallback) videoFallback.style.display='grid'; });
+    loadHeroVideo();
+    let resizeTimer;
+    addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(loadHeroVideo, 180);
+    }, {passive:true});
+
+    /* Reveal */
+    const reveals = $$('.reveal');
+    if('IntersectionObserver' in window){
+      const ro = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, {threshold:.12, rootMargin:'0px 0px -32px 0px'});
+      reveals.forEach(el => ro.observe(el));
+    } else {
+      reveals.forEach(el => el.classList.add('visible'));
+    }
+
+    /* FAQ */
+    $$('.faq-question').forEach(btn => btn.addEventListener('click', () => {
+      btn.closest('.faq-item')?.classList.toggle('open');
+    }));
+
+    /* Survey */
+    const form = $('#surveyForm');
+    const questionWrap = $('#questionWrap');
+    const questions = $$('.survey-question');
+    const progressText = $('#progressText');
+    const progressBar = $('#progressBar');
+    const prevBtn = $('#prevBtn');
+    const nextBtn = $('#nextBtn');
+    const msg = $('#surveyMsg');
+    const success = $('#surveySuccess');
+    const actions = $('#surveyActions');
+
+    function activeSteps(){
+      return state.target === 'self'
+        ? ['target','intervention','intent']
+        : ['target','intervention','respondent_age','intent'];
+    }
+
+    function renderTargetAges(){
+      const wrap = $('#targetAgeWrap');
+      const holder = $('#targetAgeOptions');
+      if(!state.target){
+        wrap.classList.remove('show');
+        holder.innerHTML='';
+        return;
+      }
+      const items = AGE_OPTIONS[state.lang][state.target];
+      holder.innerHTML = items.map(([value,label]) =>
+        `<button type="button" class="option${state.target_age===value?' selected':''}" data-value="${value}">${label}</button>`
+      ).join('');
+      wrap.classList.add('show');
+
+      $$('.option', holder).forEach(btn => btn.addEventListener('click', () => {
+        state.target_age = btn.dataset.value;
+        $$('.option', holder).forEach(x => x.classList.toggle('selected', x === btn));
+        msg.textContent='';
+      }));
+    }
+
+    function renderSurvey(){
+      const steps = activeSteps();
+      state.current = Math.min(state.current, steps.length - 1);
+      const currentStep = steps[state.current];
+
+      questions.forEach(q => q.classList.toggle('active', q.dataset.step === currentStep));
+
+      progressText.textContent = `${state.current + 1} / ${steps.length}`;
+      progressBar.style.width = `${((state.current + 1) / steps.length) * 100}%`;
+      prevBtn.disabled = state.current === 0;
+      nextBtn.textContent = state.current === steps.length - 1 ? t('submit') : t('next');
+      msg.textContent='';
+
+      $$('[data-group]').forEach(group => {
+        const field = group.dataset.group;
+        if(field === 'target_age') return;
+        $$('.option', group).forEach(btn => btn.classList.toggle('selected', state[field] === btn.dataset.value));
+      });
+      renderTargetAges();
+    }
+
+    function bindStaticOptions(){
+      $$('[data-group]').forEach(group => {
+        const field = group.dataset.group;
+        if(field === 'target_age') return;
+        $$('.option', group).forEach(btn => btn.addEventListener('click', () => {
+          const oldTarget = state.target;
+          state[field] = btn.dataset.value;
+          if(field === 'target' && oldTarget !== state.target){
+            state.target_age = null;
+            if(state.target === 'self'){
+              state.respondent_age = null;
             }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+          }
+          $$('.option', group).forEach(x => x.classList.toggle('selected', x === btn));
+          msg.textContent='';
+          if(field === 'target') renderSurvey();
+        }));
+      });
+    }
 
-        revealEls.forEach(el => revealObserver.observe(el));
-      } else {
-        revealEls.forEach(el => el.classList.add('visible'));
+    function currentField(){
+      return activeSteps()[state.current];
+    }
+
+    function validateCurrent(){
+      const field = currentField();
+      if(field === 'target'){
+        if(!state.target){
+          msg.textContent = t('needAnswer'); return false;
+        }
+        if(!state.target_age){
+          msg.textContent = t('needTargetAge'); return false;
+        }
+        return true;
+      }
+      if(!state[field]){
+        msg.textContent = t('needAnswer'); return false;
+      }
+      return true;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if(state.current > 0){
+        state.current--;
+        renderSurvey();
+      }
+    });
+
+    nextBtn.addEventListener('click', async () => {
+      if(!validateCurrent()) return;
+      const steps = activeSteps();
+
+      if(state.current < steps.length - 1){
+        state.current++;
+        renderSurvey();
+        return;
       }
 
-      // Use-case active state
-      const caseCards = [...document.querySelectorAll('[data-case]')];
-      const navButtons = [...document.querySelectorAll('.usecase-nav button')];
+      await submitSurvey();
+    });
 
-      navButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const target = document.getElementById(btn.dataset.target);
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-      });
+    function collectTracking(){
+      const params = new URLSearchParams(location.search);
+      const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'];
+      const out = {};
+      keys.forEach(k => out[k] = (params.get(k) || '').slice(0,300) || null);
+      out.referrer = (document.referrer || '').slice(0,500) || null;
+      out.page_path = location.pathname.slice(0,300);
+      out.variant = (params.get('v') || params.get('variant') || '').slice(0,80) || null;
+      return out;
+    }
 
-      if ('IntersectionObserver' in window) {
-        const caseObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const idx = Number(entry.target.dataset.case);
-              navButtons.forEach((btn, i) => btn.classList.toggle('active', i === idx));
-            }
-          });
-        }, { threshold: 0.55 });
+    function payload(){
+      return {
+        language: state.lang,
+        target: state.target,
+        target_age: state.target_age,
+        intervention: state.intervention,
+        respondent_age: state.target === 'self' ? state.target_age : state.respondent_age,
+        intent: state.intent,
+        website: $('#website')?.value || '',
+        ...collectTracking()
+      };
+    }
 
-        caseCards.forEach(card => caseObserver.observe(card));
+    async function submitSurvey(){
+      nextBtn.disabled = true;
+      prevBtn.disabled = true;
+      nextBtn.textContent = t('sending');
+      msg.textContent='';
+
+      const data = payload();
+      const isLocal = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+
+      if(isLocal){
+        console.log('[CALL X] local survey preview', data);
+        setTimeout(() => showSuccess(false), 250);
+        return;
       }
 
-      // Survey
-      const questions = [...document.querySelectorAll('.question')];
-      const progressText = document.getElementById('progressText');
-      const progressBar = document.getElementById('progressBar');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      let currentQuestion = 0;
-      const answers = new Array(questions.length).fill(null);
-
-      const renderSurvey = () => {
-        questions.forEach((q, i) => q.classList.toggle('active', i === currentQuestion));
-        progressText.textContent = `${currentQuestion + 1} / ${questions.length}`;
-        progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
-        prevBtn.disabled = currentQuestion === 0;
-        nextBtn.textContent = currentQuestion === questions.length - 1 ? '완료' : '다음';
-      };
-
-      questions.forEach((q, qi) => {
-        q.querySelectorAll('.option').forEach((opt) => {
-          opt.addEventListener('click', () => {
-            q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-            opt.classList.add('selected');
-            answers[qi] = opt.textContent.trim();
-            console.log('[GA placeholder]', `survey_q${qi+1}_answer`, answers[qi]);
-          });
+      try{
+        const res = await fetch('/api/survey', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(data)
         });
-      });
 
-      prevBtn.addEventListener('click', () => {
-        if (currentQuestion > 0) {
-          currentQuestion -= 1;
-          renderSurvey();
+        const result = await res.json().catch(() => ({}));
+        if(!res.ok || !result.ok) throw new Error(result.error || `HTTP ${res.status}`);
+
+        showSuccess(true);
+      }catch(err){
+        console.error('[CALL X] survey save failed', err);
+        msg.textContent = t('saveError');
+        nextBtn.disabled = false;
+        prevBtn.disabled = state.current === 0;
+        nextBtn.textContent = t('submit');
+      }
+    }
+
+    function labelFor(field, value){
+      if(!value) return '—';
+      const map = {
+        target:{
+          kid:t('targetKid'), senior:t('targetSenior'), self:t('targetSelf')
+        },
+        intervention:{
+          alert:t('interventionAlert'), review:t('interventionReview'), join:t('interventionJoin'), adaptive:t('interventionAdaptive')
+        },
+        intent:{
+          definitely:t('intentDefinitely'), trial:t('intentTrial'), situational:t('intentSituational'), unsure:t('intentUnsure')
         }
-      });
-
-      nextBtn.addEventListener('click', () => {
-        if (!answers[currentQuestion]) {
-          const activeOptions = questions[currentQuestion].querySelector('.options');
-          activeOptions.animate(
-            [
-              { transform: 'translateX(0)' },
-              { transform: 'translateX(-5px)' },
-              { transform: 'translateX(5px)' },
-              { transform: 'translateX(0)' }
-            ],
-            { duration: 220, easing: 'ease-out' }
-          );
-          return;
-        }
-
-        if (currentQuestion < questions.length - 1) {
-          currentQuestion += 1;
-          renderSurvey();
-        } else {
-          console.log('[GA placeholder]', 'survey_complete', answers);
-          nextBtn.textContent = '응답 완료';
-          nextBtn.disabled = true;
-          nextBtn.style.background = '#0B0E14';
-        }
-      });
-
-      // Mobile sticky CTA
-      const mobileSticky = document.getElementById('mobileSticky');
-      const surveySection = document.getElementById('survey');
-      const finalSection = document.getElementById('final');
-
-      const updateSticky = () => {
-        if (window.innerWidth > 767) {
-          mobileSticky.classList.remove('show');
-          return;
-        }
-
-        const y = window.scrollY;
-        const surveyTop = surveySection.offsetTop;
-        const finalTop = finalSection.offsetTop;
-        const shouldShow = y > window.innerHeight * 0.7 && y < surveyTop - 200 && y < finalTop - 200;
-        mobileSticky.classList.toggle('show', shouldShow);
       };
+      if(map[field]?.[value]) return map[field][value];
 
-      window.addEventListener('scroll', updateSticky, { passive: true });
-      window.addEventListener('resize', updateSticky);
-      updateSticky();
+      if(field === 'target_age'){
+        const all = Object.values(AGE_OPTIONS[state.lang]).flat();
+        return all.find(([v]) => v === value)?.[1] || value;
+      }
 
-      // Analytics placeholder
-      document.querySelectorAll('[data-event]').forEach((el) => {
-        el.addEventListener('click', () => {
-          console.log('[GA placeholder]', el.dataset.event);
-        });
+      if(field === 'respondent_age'){
+        const direct = {
+          '20s':t('age20'),'30s':t('age30'),'40s':t('age40'),'50s':t('age50'),'60plus':t('age60')
+        };
+        return direct[value] || value;
+      }
+      return value;
+    }
+
+    function renderSummary(){
+      const summary = $('#surveySummary');
+      if(!summary) return;
+      const respondent = state.target === 'self' ? state.target_age : state.respondent_age;
+      const rows = [
+        [t('summaryTarget'), labelFor('target', state.target)],
+        [t('summaryTargetAge'), labelFor('target_age', state.target_age)],
+        [t('summaryIntervention'), labelFor('intervention', state.intervention)],
+        [t('summaryRespondent'), labelFor('respondent_age', respondent)],
+        [t('summaryIntent'), labelFor('intent', state.intent)]
+      ];
+      summary.innerHTML = rows.map(([k,v]) => `<div class="summary-row"><span>${k}</span><strong>${v}</strong></div>`).join('');
+    }
+
+    function showSuccess(saved){
+      state.submitted = true;
+      form.style.display='none';
+      success.classList.add('show');
+
+      $('#successBody').textContent = saved ? t('successBody') : t('localSuccessBody');
+      const title = $('.survey-success h3');
+      title.textContent = saved ? t('successTitle') : t('localSuccessTitle');
+
+      renderSummary();
+      success.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+
+    $('#resetSurvey').addEventListener('click', () => {
+      Object.assign(state, {
+        current:0,target:null,target_age:null,intervention:null,respondent_age:null,intent:null,submitted:false
       });
-    })();
+      $('#website').value='';
+      success.classList.remove('show');
+      form.style.display='';
+      nextBtn.disabled=false;
+      renderSurvey();
+      form.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    bindStaticOptions();
+
+    /* Mobile sticky */
+    const sticky = $('#mobileSticky');
+    const survey = $('#survey');
+    function updateSticky(){
+      if(innerWidth > 767){
+        sticky.classList.remove('show');
+        sticky.setAttribute('aria-hidden','true');
+        return;
+      }
+      const y = scrollY;
+      const show = y > innerHeight * .65 && y < survey.offsetTop - 180;
+      sticky.classList.toggle('show', show);
+      sticky.setAttribute('aria-hidden', String(!show));
+    }
+    addEventListener('scroll', updateSticky, {passive:true});
+    addEventListener('resize', updateSticky, {passive:true});
+
+    /* Init */
+    applyLanguage(getInitialLang());
+    renderSurvey();
+    updateSticky();
+  })();
   </script>
-<script>
-(() => {
-  document.querySelectorAll('.landbook-tab').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.landbook-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const target = document.getElementById(btn.dataset.target);
-      if (target) target.scrollIntoView({behavior:'smooth', block:'center'});
-    });
-  });
-
-  document.querySelectorAll('.faq-question').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      btn.closest('.faq-item').classList.toggle('open');
-    });
-  });
-})();
-</script></body>
+</body>
 </html>
