@@ -2563,37 +2563,11 @@
 
       const data = payload();
 
-      const isLocal =
-        location.protocol === 'file:' ||
-        /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-
-      if(isLocal){
-        console.log('[CALL X] local survey preview', data);
-        setTimeout(() => showSuccess(false), 250);
-        return;
-      }
-
-      try{
-        const res = await fetch('/api/survey', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(data)
-        });
-
-        const result = await res.json().catch(() => ({}));
-
-        if(!res.ok || !result.ok){
-          throw new Error(result.error || `HTTP ${res.status}`);
-        }
-
-        showSuccess(true);
-      }catch(err){
-        console.error('[CALL X] survey save failed', err);
-        msg.textContent = t('saveError');
-        nextBtn.disabled = false;
-        prevBtn.disabled = state.current === 0;
-        nextBtn.textContent = t('submit');
-      }
+      // GA 전용 모드: 서버 저장(/api/survey POST) 사용 안 함.
+      // 응답값은 tracking.js가 성공 화면(show)을 감지해 survey_complete 이벤트로 GA에 전송함.
+      // 디버깅용으로 payload는 콘솔에만 남김.
+      console.log('[CALL X] survey submitted (GA-only)', data);
+      setTimeout(() => showSuccess(true), 250);
     }
 
     function labelFor(field, value){
