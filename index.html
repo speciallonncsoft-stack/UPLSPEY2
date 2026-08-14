@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css" />
 
   <style>
     :root{
@@ -893,9 +894,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      margin:28px 0;
-      border-top:1px solid var(--line);
-      border-bottom:1px solid var(--line);
+      margin:20px 0;
     }
 
     .case-flow{
@@ -920,6 +919,110 @@
       color:var(--cobalt);
       font:700 18px/1 var(--font-en);
     }
+
+    /* ── Use-case scene illustrations (KIDS / SENIOR / IN-CALL) ── */
+    /* 3칸 높이 통일: usecase-visual을 고정 높이로, 씬은 그 안에서 중앙 배치 */
+    .usecase-visual{
+      min-height:300px;
+      height:300px;
+      align-items:stretch;
+    }
+    .scene{
+      width:100%;
+      border-radius:16px;
+      border:.5px solid #E4E4EA;
+      padding:16px 15px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:9px;
+      font-family:var(--font-en);
+    }
+    .scene-kids{background:linear-gradient(160deg,#EEF2FF,#F3F6E9)}
+    .scene-senior{background:linear-gradient(160deg,#FBECEE,#F7F7F9)}
+    .scene-incall{background:linear-gradient(160deg,#EEF2FF,#F4F5EE)}
+
+    .scene i{line-height:1}
+    .scene-actor{display:flex;flex-direction:column;align-items:center;gap:7px}
+    .scene-label{font-size:11px;font-weight:700;color:var(--muted)}
+    .scene-avatar{
+      width:56px;height:56px;border-radius:50%;background:#fff;
+      border:.5px solid #E4E4EA;display:flex;align-items:center;justify-content:center;
+      font-size:28px;color:var(--cobalt);box-shadow:0 4px 10px rgba(0,0,0,.05);position:relative;
+    }
+    .scene-avatar-guard{color:#639922}
+    .scene-avatar-danger{color:var(--danger);box-shadow:0 4px 12px rgba(233,83,96,.12)}
+    .scene-dot{
+      position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;
+      background:var(--signal);border:2px solid #fff;display:flex;align-items:center;justify-content:center;
+    }
+    .scene-dot i{font-size:11px;color:#3B4D0E}
+
+    /* KIDS: 좌우 관계도 */
+    .scene-relation{display:flex;align-items:center;justify-content:space-between;gap:4px}
+    .scene-link{flex:1.1;display:flex;flex-direction:column;align-items:center}
+    .scene-dash{width:100%;height:1.5px;background:repeating-linear-gradient(90deg,#C7C7CC 0 5px,transparent 5px 10px)}
+    .scene-link-ico{font-size:18px;color:var(--subtle);margin-top:6px}
+    .scene-caption{font-size:9.5px;color:var(--subtle);margin-top:3px}
+    .scene-badge{
+      display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;
+      font-size:9.5px;font-weight:700;
+    }
+    .scene-badge i{font-size:11px}
+    .scene-badge-danger{background:var(--danger);color:#fff}
+    .scene-badge-lg{font-size:10.5px;padding:5px 11px;align-self:center}
+    .scene-badge-lg i{font-size:12px}
+    .scene-result{
+      align-self:center;display:inline-flex;align-items:center;gap:6px;margin-top:4px;
+      padding:7px 13px;background:#fff;border:.5px solid #E4E4EA;border-radius:999px;
+      font-size:11px;font-weight:700;color:#3B4D0E;
+    }
+    .scene-result i{font-size:14px;color:#639922}
+
+    /* SENIOR: 세로 흐름 */
+    .scene-senior{align-items:center}
+    .scene-chev{font-size:15px;color:#A8A8AE}
+    .scene-actor-row{flex-direction:row;gap:9px}
+    .scene-actor-row .scene-avatar{width:48px;height:48px;font-size:24px}
+    .scene-vdash{width:1.5px;height:16px;background:repeating-linear-gradient(180deg,#C7C7CC 0 4px,transparent 4px 8px)}
+    .scene-notify{
+      display:flex;align-items:center;gap:9px;padding:9px 12px;background:#fff;
+      border:.5px solid #E4E4EA;border-radius:12px;box-shadow:0 3px 9px rgba(0,0,0,.05);
+    }
+    .scene-notify-ico{width:30px;height:30px;border-radius:8px;background:#F3F6E9;display:flex;align-items:center;justify-content:center}
+    .scene-notify-ico i{font-size:18px;color:#639922}
+    .scene-notify-txt{display:flex;flex-direction:column;text-align:left}
+    .scene-notify-txt b{font-size:11px;font-weight:700;color:var(--ink);line-height:1.2}
+    .scene-notify-txt small{font-size:9.5px;color:var(--subtle)}
+    .scene-notify-ok{font-size:17px;color:#639922}
+
+    /* IN-CALL: 3스텝(알림→진입→3자) */
+    .scene-incall{gap:8px}
+    .scene-eyebrow{font-size:9px;font-weight:700;color:var(--subtle);letter-spacing:.03em}
+    .scene-alert{display:flex;align-items:center;gap:10px;padding:10px 11px;background:#fff;border:.5px solid #F0C4C8;border-radius:11px}
+    .scene-alert-ico{width:30px;height:30px;border-radius:8px;background:#FFF0F1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .scene-alert-ico i{font-size:17px;color:var(--danger)}
+    .scene-alert-txt{display:flex;flex-direction:column}
+    .scene-alert-txt b{font-size:11px;font-weight:700;color:#B23540;line-height:1.25}
+    .scene-alert-txt small{font-size:9.5px;color:var(--subtle);margin-top:1px}
+    .scene-incall .scene-chev{align-self:center}
+    .scene-enter{
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px;
+      background:var(--cobalt);border-radius:11px;color:#fff;font-size:12px;font-weight:700;
+    }
+    .scene-enter i{font-size:16px}
+    .scene-conf{background:#fff;border:.5px solid #E4E4EA;border-radius:11px;padding:11px 12px}
+    .scene-conf-head{display:flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:#639922;letter-spacing:.02em;margin-bottom:8px}
+    .scene-conf-head i{font-size:11px}
+    .scene-conf-row{display:flex;align-items:center;justify-content:space-between}
+    .scene-conf-p{display:flex;flex-direction:column;align-items:center;flex:1;gap:3px}
+    .scene-conf-p small{font-size:8.5px;color:var(--muted);font-weight:600}
+    .scene-conf-p small.scene-me{color:var(--cobalt);font-weight:700}
+    .scene-cavatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .scene-cavatar-ok{background:#F3F6E9;color:#639922}
+    .scene-cavatar-bad{background:#FFF0F1;color:var(--danger)}
+    .scene-cavatar-me{background:#EEF2FF;color:var(--cobalt)}
+    .scene-conf-ico{font-size:13px;color:#C7C7CC}
 
     .usecase-card h3{
       font-size:clamp(26px,2.6vw,36px);
@@ -1409,24 +1512,15 @@
 
       #usecases .usecase-visual{
         flex:none;
-        min-height:0;
-        margin:11px 0 13px;
-        padding:10px 0;
+        min-height:290px;
+        height:290px;
+        margin:12px 0 13px;
+        padding:0;
+        border-top:0;
+        border-bottom:0;
       }
 
-      #usecases .case-flow{
-        gap:6px;
-        font-size:11px;
-      }
-
-      #usecases .case-node{
-        padding:8px 9px;
-        border-radius:8px;
-      }
-
-      #usecases .case-arrow{
-        font-size:15px;
-      }
+      #usecases .scene{padding:15px 14px}
 
       #usecases .usecase-card h3{
         font-size:22px;
@@ -1855,10 +1949,24 @@
             </div>
 
             <div class="usecase-visual">
-              <div class="case-flow">
-                <div class="case-node" data-i18n="case1Node1">미등록 번호</div>
-                <div class="case-arrow">→</div>
-                <div class="case-node" data-i18n="case1Node2">보호자 알림</div>
+              <div class="scene scene-kids">
+                <div class="scene-relation">
+                  <div class="scene-actor">
+                    <span class="scene-avatar"><i class="ti ti-mood-kid"></i></span>
+                    <span class="scene-label" data-i18n="case1Actor1">아이</span>
+                  </div>
+                  <div class="scene-link">
+                    <span class="scene-badge scene-badge-danger"><i class="ti ti-alert-triangle"></i><span data-i18n="case1Badge">미등록</span></span>
+                    <span class="scene-dash"></span>
+                    <i class="ti ti-phone-incoming scene-link-ico"></i>
+                    <span class="scene-caption" data-i18n="case1Caption">모르는 번호</span>
+                  </div>
+                  <div class="scene-actor">
+                    <span class="scene-avatar scene-avatar-guard"><i class="ti ti-user-shield"></i><em class="scene-dot"><i class="ti ti-bell"></i></em></span>
+                    <span class="scene-label" data-i18n="case1Actor2">보호자</span>
+                  </div>
+                </div>
+                <div class="scene-result"><i class="ti ti-circle-check"></i><span data-i18n="case1Result">보호자에게 알림 전송됨</span></div>
               </div>
             </div>
 
@@ -1873,10 +1981,19 @@
             </div>
 
             <div class="usecase-visual">
-              <div class="case-flow">
-                <div class="case-node" data-i18n="case2Node1">위험 번호</div>
-                <div class="case-arrow">→</div>
-                <div class="case-node" data-i18n="case2Node2">즉시 알림</div>
+              <div class="scene scene-senior">
+                <span class="scene-badge scene-badge-danger scene-badge-lg"><i class="ti ti-shield-x"></i><span data-i18n="case2Badge">위험 번호 · 신고 다수</span></span>
+                <i class="ti ti-chevron-down scene-chev"></i>
+                <div class="scene-actor scene-actor-row">
+                  <span class="scene-avatar scene-avatar-danger"><i class="ti ti-old"></i></span>
+                  <span class="scene-label" data-i18n="case2Actor1">부모님</span>
+                </div>
+                <span class="scene-vdash"></span>
+                <div class="scene-notify">
+                  <span class="scene-notify-ico"><i class="ti ti-user-check"></i></span>
+                  <span class="scene-notify-txt"><b data-i18n="case2Result">자녀에게 즉시 알림</b><small data-i18n="case2Sub">방금 전송됨</small></span>
+                  <i class="ti ti-circle-check scene-notify-ok"></i>
+                </div>
               </div>
             </div>
 
@@ -1891,10 +2008,25 @@
             </div>
 
             <div class="usecase-visual">
-              <div class="case-flow">
-                <div class="case-node" data-i18n="case3Node1">통화 중 위험 탐지</div>
-                <div class="case-arrow">→</div>
-                <div class="case-node" data-i18n="case3Node2">보호자 참여</div>
+              <div class="scene scene-incall">
+                <span class="scene-eyebrow" data-i18n="case3Eyebrow">보호자(나)의 화면</span>
+                <div class="scene-alert">
+                  <span class="scene-alert-ico"><i class="ti ti-alert-triangle"></i></span>
+                  <span class="scene-alert-txt"><b data-i18n="case3Alert">부모님이 위험 통화 중</b><small data-i18n="case3AlertSub">보이스피싱 패턴 감지</small></span>
+                </div>
+                <i class="ti ti-chevron-down scene-chev"></i>
+                <div class="scene-enter"><i class="ti ti-arrow-badge-right"></i><span data-i18n="case3Enter">보호자 통화로 진입</span></div>
+                <i class="ti ti-chevron-down scene-chev"></i>
+                <div class="scene-conf">
+                  <span class="scene-conf-head"><i class="ti ti-point-filled"></i><span data-i18n="case3Conf">3자 통화 연결됨</span></span>
+                  <div class="scene-conf-row">
+                    <div class="scene-conf-p"><span class="scene-cavatar scene-cavatar-ok"><i class="ti ti-old"></i></span><small data-i18n="case3P1">부모님</small></div>
+                    <i class="ti ti-phone-call scene-conf-ico"></i>
+                    <div class="scene-conf-p"><span class="scene-cavatar scene-cavatar-bad"><i class="ti ti-user-x"></i></span><small data-i18n="case3P2">상대방</small></div>
+                    <i class="ti ti-phone-call scene-conf-ico"></i>
+                    <div class="scene-conf-p"><span class="scene-cavatar scene-cavatar-me"><i class="ti ti-user-shield"></i></span><small class="scene-me" data-i18n="case3P3">나</small></div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -2071,12 +2203,15 @@
         intentDefinitely:'꼭 사용', intentTrial:'체험 의향', intentSituational:'상황별 사용', intentUnsure:'잘 모르겠음',
         casesEyebrow:'Three protection moments', casesTitle:'보호해야 하는 순간은 세 가지로 나눠볼 수 있습니다.',
         casesDesc:'모르는 번호를 받기 전부터, 이미 시작된 통화에 보호자가 들어가는 순간까지 단계적으로 생각했습니다.',
-        case1Pill:'Unknown call', case1Node1:'미등록 번호', case1Node2:'보호자 알림',
+        case1Pill:'Unknown call',
+        case1Actor1:'아이', case1Actor2:'보호자', case1Badge:'미등록', case1Caption:'모르는 번호', case1Result:'보호자에게 알림 전송됨',
         case1Title:'모르는 번호가 아이에게 전화했을 때', case1Desc:'위험·미등록 번호의 수신 사실을 보호자에게 알려 아이가 혼자 판단해야 하는 상황을 줄입니다.',
-        case2Pill:'Risk number', case2Node1:'위험 번호', case2Node2:'즉시 알림',
+        case2Pill:'Risk number',
+        case2Badge:'위험 번호 · 신고 다수', case2Actor1:'부모님', case2Result:'자녀에게 즉시 알림', case2Sub:'방금 전송됨',
         case2Title:'위험 번호가 부모님에게 전화했을 때', case2Desc:'사기 가능성이 높은 전화의 수신을 보호자가 빠르게 인지하고 필요한 조치를 판단할 수 있게 합니다.',
-        case3Pill:'Voice risk', case3Node1:'통화 중 위험 탐지', case3Node2:'보호자 참여',
-        case3Title:'통화 중 보이스피싱 위험이 감지됐을 때', case3Desc:'위험 신호를 보호자에게 알리고, 필요하다면 제3자로 통화에 참여하는 흐름까지 확장합니다.',
+        case3Pill:'Voice risk',
+        case3Eyebrow:'보호자(나)의 화면', case3Alert:'부모님이 위험 통화 중', case3AlertSub:'보이스피싱 패턴 감지', case3Enter:'보호자 통화로 진입', case3Conf:'3자 통화 연결됨', case3P1:'부모님', case3P2:'상대방', case3P3:'나',
+        case3Title:'통화 중 보이스피싱 위험이 감지됐을 때', case3Desc:'위험 신호를 보호자에게 알리고, 보호자가 직접 통화에 합류해 상황에 개입할 수 있게 합니다.',
         trustEyebrow:'Protection, not surveillance', trustTitle:'가족을 지키는 기능일수록, 개입 기준은 분명해야 합니다.',
         trustDesc:'CALL X는 모든 통화를 들여다보는 서비스가 아니라, 위험 가능성이 있는 순간에 보호자에게 필요한 신호를 전달하는 방향을 전제로 합니다.',
         trust1Title:'위험 신호가 있을 때 알립니다', trust1Desc:'보호자가 모든 전화를 실시간으로 확인해야 하는 구조보다, 확인이 필요한 순간을 선별하는 방향입니다.',
@@ -2146,12 +2281,15 @@
         intentDefinitely:'Très intéressé', intentTrial:'Prêt à essayer', intentSituational:'Selon la situation', intentUnsure:'Pas encore sûr',
         casesEyebrow:'Trois moments de protection', casesTitle:'Trois moments où la protection peut faire la différence.',
         casesDesc:'Du numéro inconnu avant même la conversation, jusqu’au moment où un proche rejoint un appel déjà en cours.',
-        case1Pill:'Numéro inconnu', case1Node1:'Numéro inconnu', case1Node2:'Alerte au proche',
+        case1Pill:'Numéro inconnu',
+        case1Actor1:'Enfant', case1Actor2:'Proche', case1Badge:'Non enregistré', case1Caption:'Numéro inconnu', case1Result:'Alerte envoyée au proche',
         case1Title:'Lorsqu’un numéro inconnu appelle un enfant', case1Desc:'Le proche est informé qu’un numéro inconnu ou potentiellement risqué tente de joindre l’enfant, afin de réduire les situations où il doit décider seul.',
-        case2Pill:'Numéro à risque', case2Node1:'Numéro à risque', case2Node2:'Alerte immédiate',
+        case2Pill:'Numéro à risque',
+        case2Badge:'Numéro à risque · signalé', case2Actor1:'Parent', case2Result:'Alerte immédiate à l’enfant', case2Sub:'Envoyée à l’instant',
         case2Title:'Lorsqu’un numéro risqué appelle un senior', case2Desc:'Le proche peut être averti rapidement d’un appel à forte probabilité de fraude et décider de la suite à donner.',
-        case3Pill:'Risque vocal', case3Node1:'Risque détecté pendant l’appel', case3Node2:'Le proche rejoint',
-        case3Title:'Lorsqu’un risque de fraude vocale est détecté pendant l’appel', case3Desc:'CALL X avertit le proche et peut aller jusqu’à permettre sa participation à l’appel en tant que tierce personne.',
+        case3Pill:'Risque vocal',
+        case3Eyebrow:'Écran du proche', case3Alert:'Parent en appel à risque', case3AlertSub:'Motif de fraude vocale détecté', case3Enter:'Rejoindre l’appel', case3Conf:'Appel à trois connecté', case3P1:'Parent', case3P2:'Interlocuteur', case3P3:'Moi',
+        case3Title:'Lorsqu’un risque de fraude vocale est détecté pendant l’appel', case3Desc:'CALL X avertit le proche, qui peut rejoindre directement l’appel pour intervenir dans la situation.',
         trustEyebrow:'Protéger, pas surveiller', trustTitle:'Plus la fonction protège la famille, plus ses règles d’intervention doivent être claires.',
         trustDesc:'CALL X n’est pas conçu pour écouter tous les appels. Le concept repose sur l’idée de transmettre au proche le bon signal lorsqu’une situation semble risquée.',
         trust1Title:'Alerter lorsqu’un signal mérite l’attention', trust1Desc:'L’objectif est de sélectionner les moments à vérifier, plutôt que d’imposer une surveillance permanente de tous les appels.',
@@ -2572,7 +2710,7 @@
          URL이 비어 있으면(지금 상태) 전송을 건너뛰고 콘솔에만 기록합니다.
          → URL 없이도 화면·GA 전환은 정상 동작합니다.
          ──────────────────────────────────────────────────────────────── */
-      const SHEET_ENDPOINT = '';  // ← 여기에 /exec URL 붙여넣기
+      const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbycmuldslpaAc9XHxLjkoOTSnrtawYMqctpDDOCtbPACo8WnW3V53NwEaVswGlyrGsy/exec';  // ← 공용 수집 URL
 
       console.log('[CALL X] survey submitted', data);
 
