@@ -308,7 +308,12 @@
       .hero-sub{font-size:16px}
       .hero-actions{margin-top:24px}
       .hero-actions .btn-secondary{display:none}
-      .video-shell{min-height:400px}
+
+      /* ---- FIX: hero 이미지 셸 세로선(빈 셸) 방지 ---- */
+      .hero-side{width:100%;min-width:0}
+      .video-shell{width:100%;min-height:0;aspect-ratio:4/5}
+      .hero-side:not(:has(.hero-image[src]:not([src=""]))) .video-shell{display:none}
+
       .risk-toast{left:12px;right:12px;bottom:12px;grid-template-columns:auto 1fr}
       .risk-state{grid-column:2}
       .hero-zeros{gap:7px}
@@ -383,7 +388,6 @@
 
     @media(max-width:380px){
       .hero h1{font-size:40px}
-      .video-shell{min-height:360px}
       .hero-zeros span{padding:6px 10px}
       #how .how-step{grid-template-columns:23px 34px minmax(0,1fr);padding:11px;column-gap:8px}
       #how .how-icon{width:34px;height:34px}
@@ -1069,6 +1073,17 @@
     }
     addEventListener('scroll', updateSticky, {passive:true});
     addEventListener('resize', () => { updateSticky(); syncQuestionViewportHeight(); }, {passive:true});
+
+    // ---- hero 이미지 로드 실패 시 셸 숨김 (:has() 미지원 브라우저 폴백) ----
+    (function guardHeroShell(){
+      const heroImg = document.querySelector('.hero-image');
+      const heroShell = document.querySelector('.video-shell');
+      if(!heroImg || !heroShell) return;
+      const hide = () => { heroShell.style.display = 'none'; };
+      if(!heroImg.getAttribute('src')) hide();
+      heroImg.addEventListener('error', hide);
+      if(heroImg.complete && heroImg.naturalWidth === 0) hide();
+    })();
 
     applyLanguage();
     renderSurvey(false);
