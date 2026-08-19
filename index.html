@@ -114,7 +114,6 @@
     .risk-state{display:inline-flex;align-items:center;gap:7px;color:#424248;font-size:11px;font-weight:700;white-space:nowrap}
     .risk-state i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 4px rgba(201,255,87,.18)}
 
-    /* B 방식의 칩 UI로 교체 */
     .hero-zeros{display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line-strong);margin-top:28px;padding-top:18px}
     .hero-zeros>div{padding:0}
     .hero-zeros span{display:inline-flex;align-items:center;padding:9px 14px;border:1px solid var(--line-strong);border-radius:999px;background:#fff;color:var(--text);font-size:13px;font-weight:650}
@@ -309,7 +308,6 @@
       .hero-actions{margin-top:24px}
       .hero-actions .btn-secondary{display:none}
 
-      /* ---- FIX: hero 이미지 셸 세로선(빈 셸) 방지 ---- */
       .hero-side{width:100%;min-width:0}
       .video-shell{width:100%;min-height:0;aspect-ratio:4/5}
       .hero-side:not(:has(.hero-image[src]:not([src=""]))) .video-shell{display:none}
@@ -712,6 +710,9 @@
   (() => {
     'use strict';
 
+    /* 📝 이 랜딩페이지 고유 ID — 페이지마다 반드시 다르게! (Neon survey_responses.site 컬럼에 저장됨) */
+    const SITE_ID = 'kr-protection';
+
     const I18N = {
       ko: {
         metaTitle:'CALL X — 가족에게 걸려온 수상한 전화, 혼자 판단하게 두지 않도록',
@@ -746,7 +747,6 @@
         q4Definitely:'꼭 사용해보고 싶다', q4Trial:'한번 체험해보고 싶다', q4Situational:'상황에 따라 사용할 것 같다', q4Unsure:'아직 잘 모르겠다',
         prev:'이전', next:'다음', submit:'응답 보내기', sending:'저장 중…',
         needAnswer:'답변을 하나 선택해주세요.', needTargetAge:'대상의 연령대를 선택해주세요.', saveError:'응답을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
-        localOnly:'로컬 미리보기에서는 서버에 저장되지 않습니다. Vercel 배포 후 /api/survey로 저장됩니다.',
         successTitle:'응답이 저장되었습니다.', successBody:'CALL X가 어떤 보호부터 시작해야 할지 판단하는 데 활용하겠습니다.',
         localSuccessTitle:'미리보기 응답을 확인했습니다.', localSuccessBody:'현재는 로컬 미리보기라 서버에는 저장되지 않았습니다.', reset:'다시 응답하기',
         summaryTarget:'보호 대상', summaryTargetAge:'대상 연령', summaryIntervention:'개입 수준', summaryRespondent:'응답자 연령', summaryIntent:'사용 의향',
@@ -961,13 +961,17 @@
     }
 
     function payload(){
+      // 분기형 응답을 answers 객체로 묶어 Neon survey_responses.answers(JSONB)에 저장
       return {
+        site: SITE_ID,
         language:'ko',
-        target:state.target,
-        target_age:state.target_age,
-        intervention:state.intervention,
-        respondent_age:state.target === 'self' ? state.target_age : state.respondent_age,
-        intent:state.intent,
+        answers:{
+          target: state.target,
+          target_age: state.target_age,
+          intervention: state.intervention,
+          respondent_age: state.target === 'self' ? state.target_age : state.respondent_age,
+          intent: state.intent
+        },
         website:$('#website')?.value || '',
         ...collectTracking()
       };
@@ -980,27 +984,23 @@
       msg.textContent = '';
       const data = payload();
 
-      const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbycmuldslpaAc9XHxLjkoOTSnrtawYMqctpDDOCtbPACo8WnW3V53NwEaVswGlyrGsy/exec';
+      const isLocal = location.protocol==='file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
       console.log('[CALL X] survey submitted', data);
+      if(isLocal){ setTimeout(()=>showSuccess(false), 250); return; }
 
-      if (SHEET_ENDPOINT) {
-        try {
-          fetch(SHEET_ENDPOINT, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(data)
-          }).catch(function (err) {
-            console.warn('[CALL X] sheet save failed (무시하고 진행)', err);
-          });
-        } catch (err) {
-          console.warn('[CALL X] sheet save threw (무시하고 진행)', err);
-        }
-      } else {
-        console.warn('[CALL X] SHEET_ENDPOINT 미설정 — 시트 저장 건너뜀 (화면·GA는 정상)');
+      try{
+        const res = await fetch('/api/submit', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body:JSON.stringify(data)
+        });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        showSuccess(true);
+      }catch(err){
+        console.error('[CALL X] survey save failed', err);
+        msg.textContent = t('saveError');
+        nextBtn.disabled=false; prevBtn.disabled=state.current===0; nextBtn.textContent=t('submit');
       }
-
-      setTimeout(() => showSuccess(true), 250);
     }
 
     function labelFor(field, value){
